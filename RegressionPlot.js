@@ -135,103 +135,9 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				
 
 				/////// DOTS //////
-				//var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(layout.qHyperCube.qDataPages[0].qMatrix);
-				
-				//console.log(layout.qHyperCube.qDataPages[0].qMatrix);
-				//console.log(layout.qHyperCube.qDataPages[0].qMatrix.length);
-				
-				/*
-				for(var i=0;i<layout.qHyperCube.qDataPages[0].qMatrix.length;i++)
-				{
-				if(layout.qHyperCube.qDataPages[0].qMatrix[i][2].qNum>50)
-					{
-					console.log("hi");
-					}
-				}
-				*/
-				
-				/*
-				for(var i=0;i<layout.qHyperCube.qDataPages[0].qMatrix.length;i++)
-				{
-				console.log(layout.qHyperCube.qDataPages[0].qMatrix[i][2].qNum);
-				}
-				*/
+				var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(layout.qHyperCube.qDataPages[0].qMatrix);
 				
 				
-				/*for(var i=0;i<layout.qHyperCube.qDataPages[0].qMatrix.length;i++)
-				{
-				 for(var j=0;j<3;j++)
-				  {
-				  console.log(layout.qHyperCube.qDataPages[0].qMatrix[i][j]);
-				  }
-				}
-				*/
-				
-				
-				
-				/*
-				for(var i=0;i<layout.qHyperCube.qDataPages[0].qMatrix.length;i++)
-				{
-				if(layout.qHyperCube.qDataPages[0].qMatrix[i][2].qNum>50)
-					{
-					//enter
-					d3.select($element[0]).select(".plot").selectAll(".dot").data(layout.qHyperCube.qDataPages[0].qMatrix[i]).enter().append("circle")
-						.attr("class", "dot")
-						.attr("r", 5)
-						.attr("stroke", "#293b47")
-						.attr("fill", "#7A99AC")
-						.attr("cx", function(d) { return x(d[1].qNum); })
-						.attr("cy", function(d) { return y(d[2].qNum); });
-						//exit
-					d3.select($element[0]).select(".plot").selectAll(".dot").data(layout.qHyperCube.qDataPages[0].qMatrix[i]).exit().remove();
-				
-				
-					//console.log(dots);
-				
-				
-					//update
-					d3.select($element[0]).select(".plot").selectAll(".dot").data(layout.qHyperCube.qDataPages[0].qMatrix[i])
-						.attr("r",5)
-						.attr("stroke", "#293b47")
-						.attr("fill", "#7A99AC")
-						.attr("cx", function(d) { return x(d[1].qNum); })
-						.attr("cy", function(d) { return y(d[2].qNum); });
-					}
-				}
-				*/
-				
-				
-				
-				for(var i=0;i<10;i++)
-				{
-				//enter
-					d3.select($element[0]).select(".plot").selectAll(".dot").data(layout.qHyperCube.qDataPages[0].qMatrix[i]).enter().append("circle")
-						.attr("class", "dot")
-						.attr("r", 5)
-						.attr("stroke", "#293b47")
-						.attr("fill", "#7A99AC")
-						.attr("cx", function(d) { return x(d[1].qNum); })
-						.attr("cy", function(d) { return y(d[2].qNum); });
-						//exit
-					d3.select($element[0]).select(".plot").selectAll(".dot").data(layout.qHyperCube.qDataPages[0].qMatrix[i]).exit().remove();
-				
-				
-					//console.log(dots);
-				
-				
-					//update
-					d3.select($element[0]).select(".plot").selectAll(".dot").data(layout.qHyperCube.qDataPages[0].qMatrix[i])
-						.attr("r",5)
-						.attr("stroke", "#293b47")
-						.attr("fill", "#7A99AC")
-						.attr("cx", function(d) { return x(d[1].qNum); })
-						.attr("cy", function(d) { return y(d[2].qNum); });
-				}
-				
-				
-				
-				
-				/*
 				//enter
 				dots.enter().append("circle")
 					.attr("class", "dot")
@@ -254,8 +160,9 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					.attr("fill", "#7A99AC")
 					.attr("cx", function(d) { return x(d[1].qNum); })
 					.attr("cy", function(d) { return y(d[2].qNum); });
-				*/
 				
+				
+			
 
 				//// REGRESSION LINE ////
 				var regressionLine = d3.select($element[0]).select(".plot").selectAll(".regression").data([regressionPoints]);
