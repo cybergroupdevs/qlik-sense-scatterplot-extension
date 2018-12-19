@@ -135,8 +135,14 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				
 
 				/////// DOTS //////
-				var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(layout.qHyperCube.qDataPages[0].qMatrix);
+				var tempArr = new Array();
+				tempArr.push(layout.qHyperCube.qDataPages[0].qMatrix[1][2]);
+				tempArr.push(layout.qHyperCube.qDataPages[0].qMatrix[2][2]);
+				console.log(layout.qHyperCube.qDataPages[0].qMatrix);
 				
+				var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(tempArr);
+				
+			
 				
 				//enter
 				dots.enter().append("circle")
@@ -144,13 +150,11 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					.attr("r", 5)
 					.attr("stroke", "#293b47")
 					.attr("fill", "#7A99AC")
-					.attr("cx", function(d) { return x(d[1].qNum); })
-					.attr("cy", function(d) { return y(d[2].qNum); });
+					.attr("cx", function(d) { const t = x(d.qNum); return t; })
+					.attr("cy", function(d) { const u = y(d.qNum); return u; });
 				//exit
 				dots.exit().remove();
 				
-				
-				//console.log(dots);
 				
 				
 				//update
@@ -160,10 +164,9 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					.attr("fill", "#7A99AC")
 					.attr("cx", function(d) { return x(d[1].qNum); })
 					.attr("cy", function(d) { return y(d[2].qNum); });
-				
-				
+					
+					
 			
-
 				//// REGRESSION LINE ////
 				var regressionLine = d3.select($element[0]).select(".plot").selectAll(".regression").data([regressionPoints]);
 				//enter
