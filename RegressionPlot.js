@@ -167,6 +167,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				d3.select($element[0]).select(".y-label").append("text").attr( "transform","translate(" + (layout.margin.left*(1/4)) + "," + (height/2) + ") rotate(-90)").style("text-anchor", "middle").text(this.backendApi.getMeasureInfos()[1].qFallbackTitle);
 				
 				
+				console.log(dots)
 				
 				
 				/////// DOTS //////
@@ -175,20 +176,43 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				//enter
 				dots.enter().append("circle")
 					.attr("class", "dot")
-					.attr("r", 5)
-					.attr("stroke", "#293b47")
-					.attr("fill", "#7A99AC")
+					.attr("r", 8)
+					.attr("stroke",  function(d) {
+						var newData = x(d[1].qNum)
+						if(newData > 500) {
+							return "black"
+						}else if(newData >300){
+							return "blue"
+						}else if(newData >100){
+							return "green"
+						}else{
+							return "yellow"
+						}
+				   })
+					.attr("fill", function(d) {
+						var newData = x(d[1].qNum)
+						if(newData > 500) {
+							return "black"
+						}else if(newData >300){
+							return "blue"
+						}else if(newData >100){
+							return "green"
+						}else{
+							return "yellow"
+						}
+				   })
 					.attr("cx", function(d) { return x(d[1].qNum); })
 					.attr("cy", function(d) { return y(d[2].qNum); });
 				//exit
 				dots.exit().remove();
-				//update
+				//update 
 				dots
 					.attr("r", 5)
 					.attr("stroke", "#293b47")
 					.attr("fill", "#7A99AC")
 					.attr("cx", function(d) { return x(d[1].qNum); })
 					.attr("cy", function(d) { return y(d[2].qNum); });
+
 				
 
 				//// REGRESSION LINE ////
@@ -243,9 +267,17 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				// function to generate 100 points on regression line so it can be plotted
 				$scope.generateRegressionPoints = function() {
 					var arr = [];
-					var data = $scope.layout.qHyperCube.qDataPages[0].qMatrix.map(function(row){return [row[1].qNum,row[2].qNum]});
-					var min = data.reduce(function(min, val) { return val[0] < min ? val[0] : min; }, data[0][0]);
-					var max = data.reduce(function(max, val) { return val[0] > max ? val[0] : max; }, data[0][0]);
+					var data = $scope.layout.qHyperCube.qDataPages[0].qMatrix.map(function(row){
+						return [row[1].qNum,row[2].qNum]
+					});
+					console.log($scope.layout.qHyperCube.qDataPages[0].qMatrix)
+					console.log(data)
+					var min = data.reduce(function(min, val) { 
+						return val[0] < min ? val[0] : min; 
+					}, data[0][0]);
+					var max = data.reduce(function(max, val) { 
+						return val[0] > max ? val[0] : max; 
+					}, data[0][0]);
 					var extent = max - min;
 					for(var i = 0; i < 100; i++) {
 						var x = min + (extent/100)*i;
