@@ -79,21 +79,21 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 										label: "Right Margin",
 										ref: "margin.right",
 										min: "0",
-										defaultValue: "10"
+										defaultValue: "20"
 									},
 									marginBottom: {
 										type: "integer",
 										label: "Bottom Margin",
 										ref: "margin.bottom",
 										min: "0",
-										defaultValue: "20"
+										defaultValue: "60"
 									},
 									marginLeft: {
 										type: "integer",
 										label: "Left Margin",
 										ref: "margin.left",
 										min: "0",
-										defaultValue: "30"
+										defaultValue: "50"
 									}
 								}
 							}
@@ -109,6 +109,9 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 			paint: function ($element, layout) {
 				//console.log($element);
 				
+				 if(this.painted) return;
+				 this.painted = true;
+				
 				// get points on regression line
 				var regressionPoints = this.$scope.generateRegressionPoints();
 
@@ -122,6 +125,36 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				// scales
 				var x = d3.scaleLinear().domain([0, d3.max(layout.qHyperCube.qDataPages[0].qMatrix, function(d) { return d[1].qNum; })]).range([0, width]);
 				var y = d3.scaleLinear().domain([0, d3.max(layout.qHyperCube.qDataPages[0].qMatrix, function(d) { return d[2].qNum; })]).range([height, 0]);
+				
+				
+				// gridlines in x axis function
+				function make_x_gridlines() {		
+    			return d3.axisBottom(x).scale(x).ticks(10);
+				}
+
+				// gridlines in y axis function
+				function make_y_gridlines() {		
+    			return d3.axisLeft(y).scale(y).ticks(10);
+				}
+				
+				// add the X gridlines
+  				d3.select($element[0]).select(".plot").append("g")			
+     			 	.attr("class", "grid")
+      				.attr("transform", "translate(0," + height + ")")
+      				.call(make_x_gridlines()
+          			.tickSize(-height)
+          			.tickFormat("")
+					
+     				 )
+
+  				// add the Y gridlines
+ 				d3.select($element[0]).select(".plot").append("g")			
+     				.attr("class", "grid")
+      				.call(make_y_gridlines()
+          			.tickSize(-width)
+          			.tickFormat("")
+     	 			)
+				
 
 				// x and y axis
 				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x).tickSizeOuter(0));
@@ -133,11 +166,12 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				d3.select($element[0]).select(".x-label").append("text").attr("transform","translate(" + (layout.margin.left+(width/2)) + "," + ($element.height()-layout.margin.bottom+35) + ")").style("text-anchor", "middle").text(this.backendApi.getMeasureInfos()[0].qFallbackTitle);		
 				d3.select($element[0]).select(".y-label").append("text").attr( "transform","translate(" + (layout.margin.left*(1/4)) + "," + (height/2) + ") rotate(-90)").style("text-anchor", "middle").text(this.backendApi.getMeasureInfos()[1].qFallbackTitle);
 				
-
+				
+				
+				
 				/////// DOTS //////
-				var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(layout.qHyperCube.qDataPages[0].qMatrix);
-				
-				
+				var dots = d3.select($element[0]).select(".plot").selectAll(".dot")
+					.data(layout.qHyperCube.qDataPages[0].qMatrix);
 				//enter
 				dots.enter().append("circle")
 					.attr("class", "dot")
@@ -148,35 +182,28 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					.attr("cy", function(d) { return y(d[2].qNum); });
 				//exit
 				dots.exit().remove();
-				
-				
-				//console.log(dots);
-				
-				
 				//update
 				dots
-					.attr("r",5)
+					.attr("r", 5)
 					.attr("stroke", "#293b47")
 					.attr("fill", "#7A99AC")
 					.attr("cx", function(d) { return x(d[1].qNum); })
 					.attr("cy", function(d) { return y(d[2].qNum); });
 				
-				
-				// Working copy
 
 				//// REGRESSION LINE ////
 				var regressionLine = d3.select($element[0]).select(".plot").selectAll(".regression").data([regressionPoints]);
 				//enter
 				regressionLine.enter().append("path")
 					.attr("class", "regression")
-					.attr("stroke", "red")
-					.attr("stroke-width", "2px")
+					.attr("stroke", "black")
+					.attr("stroke-width", "1.5px")
 					.attr("d", d3.line().curve(d3.curveCardinal).x(function(d){ return x(d[0]); }).y(function(d){ return y(d[1]); }));
 				//exit
 				regressionLine.exit().remove();
 				//update
 				regressionLine
-					.attr("stroke", "#e4002b")
+					.attr("stroke", "black")
 					.attr("d", d3.line().curve(d3.curveCardinal).x(function(d){ return x(d[0]); }).y(function(d){ return y(d[1]); }));
 
 				//// STATS ////
