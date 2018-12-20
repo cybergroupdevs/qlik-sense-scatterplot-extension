@@ -162,7 +162,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					.attr("cy", function(d) { return y(d[2].qNum); });
 				
 				
-			
+				// Working copy
 
 				//// REGRESSION LINE ////
 				var regressionLine = d3.select($element[0]).select(".plot").selectAll(".regression").data([regressionPoints]);
