@@ -72,14 +72,14 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 										label: "Top Margin",
 										ref: "margin.top",
 										min: "0",
-										defaultValue: "10"
+										defaultValue: "30"
 									},
 									marginRight: {
 										type: "integer",
 										label: "Right Margin",
 										ref: "margin.right",
 										min: "0",
-										defaultValue: "20"
+										defaultValue: "30"
 									},
 									marginBottom: {
 										type: "integer",
@@ -167,28 +167,48 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				d3.select($element[0]).select(".y-label").append("text").attr( "transform","translate(" + (layout.margin.left*(1/4)) + "," + (height/2) + ") rotate(-90)").style("text-anchor", "middle").text(this.backendApi.getMeasureInfos()[1].qFallbackTitle);
 				
 				
-				console.log(dots)
+				
+				
+				  
+				  
+				 
 				 // Add the tooltip container to the vis container
               // it's invisible and its position/contents are defined during mouseover
-              var tooltip = d3.select($element[0]).append("div")
-                  .attr("class", "tooltip")
-                  .style("opacity", 0);
+              var tooltip = d3.select($element[0]).append("div").attr("class", "tooltip").style("opacity",0.5);
 
               // tooltip mouseover event handler
               var tipMouseover = function(d) {
-              	console.log(d)
-              	console.log(d[0].qText, d[0].qState)
-                  var color = "black";
-                  var state = d[0].qState
-                  var text = d[0].qText
-                  var html  = "<span style='color:" + color + ";font-size:18px;'>" + text + ", "+state+"</span><br/>"
-
+              	  
+                  var color = "white"; 
+				  var state=d[0].qText;
+				  var xval=d[1].qText;
+				  var yval=d[2].qText;
+				  
+				  var tooltipx=layout.qHyperCube.qMeasureInfo[0].qFallbackTitle;
+				  var tooltipy=layout.qHyperCube.qMeasureInfo[1].qFallbackTitle;
+           
+				  var html  = "<div style='background-color: black ;opacity:0.5;padding:5px ; border-radius: 5px'><span style='color:" + color + ";font-size:14px; font-weight:bold '>" +state+ "</span><br><span style='color:" + color + ";font-size:11px;'>"+tooltipx+" : " +xval+ " <br> "+tooltipy+" : "+yval+"</span><br/></div>"
+				  
+				
+				  if(d3.event.pageX>500 || d3.event.pageY<500)
+				  {
                   tooltip.html(html)
                       .style("left", (d3.event.pageX)-250 + "px")
-                      .style("top", (d3.event.pageY)-180 + "px")
-                    .transition()
+                      .style("top", (d3.event.pageY)-250 + "px")
+                      .transition()
                       .duration(200) // ms
-                      .style("opacity", .9) // started as 0!
+                      .style("opacity", .9) 
+				  }
+				  else
+				  {
+				  tooltip.html(html)
+                      .style("left", (d3.event.pageX)-50 + "px")
+                      .style("top", (d3.event.pageY)-250 + "px")
+                      .transition()
+                      .duration(200) // ms
+                      .style("opacity", .9) 
+				  }
+				  
 
               };
               // tooltip mouseout event handler
@@ -204,7 +224,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				//enter
 				dots.enter().append("circle")
 					.attr("class", "dot")
-					.attr("r", 8)
+					.attr("r",5)
 					.attr("stroke",  function(d) {
 						var newData = x(d[1].qNum)
 						if(newData > 500) {
@@ -241,8 +261,30 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				//update 
 				dots
 					.attr("r", 5)
-					.attr("stroke", "#293b47")
-					.attr("fill", "#7A99AC")
+					.attr("stroke",  function(d) {
+						var newData = x(d[1].qNum)
+						if(newData > 500) {
+							return "black"
+						}else if(newData >300){
+							return "blue"
+						}else if(newData >100){
+							return "green"
+						}else{
+							return "yellow"
+						}
+				   })
+					.attr("fill", function(d) {
+						var newData = x(d[1].qNum)
+						if(newData > 500) {
+							return "black"
+						}else if(newData >300){
+							return "blue"
+						}else if(newData >100){
+							return "green"
+						}else{
+							return "yellow"
+						}
+				   })
 					.attr("cx", function(d) { return x(d[1].qNum); })
 					.attr("cy", function(d) { return y(d[2].qNum); })
 					.on("mouseover", tipMouseover)
@@ -305,8 +347,8 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					var data = $scope.layout.qHyperCube.qDataPages[0].qMatrix.map(function(row){
 						return [row[1].qNum,row[2].qNum]
 					});
-					console.log($scope.layout.qHyperCube.qDataPages[0].qMatrix)
-					console.log(data)
+					//console.log($scope.layout.qHyperCube.qDataPages[0].qMatrix)
+					//console.log(data)
 					var min = data.reduce(function(min, val) { 
 						return val[0] < min ? val[0] : min; 
 					}, data[0][0]);
