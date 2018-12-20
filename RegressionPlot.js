@@ -168,7 +168,35 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				
 				
 				console.log(dots)
-				
+				 // Add the tooltip container to the vis container
+              // it's invisible and its position/contents are defined during mouseover
+              var tooltip = d3.select($element[0]).append("div")
+                  .attr("class", "tooltip")
+                  .style("opacity", 0);
+
+              // tooltip mouseover event handler
+              var tipMouseover = function(d) {
+              	console.log(d)
+              	console.log(d[0].qText, d[0].qState)
+                  var color = "black";
+                  var state = d[0].qState
+                  var text = d[0].qText
+                  var html  = "<span style='color:" + color + ";font-size:18px;'>" + text + ", "+state+"</span><br/>"
+
+                  tooltip.html(html)
+                      .style("left", (d3.event.pageX)-250 + "px")
+                      .style("top", (d3.event.pageY)-180 + "px")
+                    .transition()
+                      .duration(200) // ms
+                      .style("opacity", .9) // started as 0!
+
+              };
+              // tooltip mouseout event handler
+              var tipMouseout = function(d) {
+                  tooltip.transition()
+                      .duration(300) // ms
+                      .style("opacity", 0); // don't care about position!
+              };
 				
 				/////// DOTS //////
 				var dots = d3.select($element[0]).select(".plot").selectAll(".dot")
@@ -202,7 +230,12 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 						}
 				   })
 					.attr("cx", function(d) { return x(d[1].qNum); })
-					.attr("cy", function(d) { return y(d[2].qNum); });
+					.attr("cy", function(d) { return y(d[2].qNum); })
+					.on("mouseover", tipMouseover)
+                	.on("mouseout", tipMouseout);
+
+
+
 				//exit
 				dots.exit().remove();
 				//update 
@@ -211,7 +244,9 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					.attr("stroke", "#293b47")
 					.attr("fill", "#7A99AC")
 					.attr("cx", function(d) { return x(d[1].qNum); })
-					.attr("cy", function(d) { return y(d[2].qNum); });
+					.attr("cy", function(d) { return y(d[2].qNum); })
+					.on("mouseover", tipMouseover)
+                	.on("mouseout", tipMouseout);
 
 				
 
