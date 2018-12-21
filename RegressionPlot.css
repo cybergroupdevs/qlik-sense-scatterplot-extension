@@ -37,9 +37,26 @@
 
 .tooltip {
             position: absolute;
-            font-size: 12px;
             width:  auto;
             height: auto;
             pointer-events: none;
-            background-color: white;
         }
+		
+		
+.x-label{
+			fill:#595959;
+   			shape-rendering: crispEdges;
+	}
+	
+
+.y-label{
+			fill:#595959;
+   			shape-rendering: crispEdges;
+	
+	}
+
+
+
+
+	
+
