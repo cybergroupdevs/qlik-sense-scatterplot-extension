@@ -131,9 +131,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				exportData: true
 			},
 			paint: function ($element, layout) {
-				//console.log($element);
-				 
-				 
+			
 				 if(this.painted) return;
 				 this.painted = true;
 				
@@ -146,20 +144,12 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				
 				d3.select($element[0]).select("svg").attr("width", $element.width()).attr("height", $element.height());
 				d3.select($element[0]).select(".plot").attr("transform", "translate(" + layout.margin.left + "," + layout.margin.top + ")");
-				
-				
-				
-				// scales
-				//var x = d3.scaleLinear().domain([0, d3.max(layout.qHyperCube.qDataPages[0].qMatrix, function(d) { return d[1].qNum; })]).range([0, width]);
-				//var y = d3.scaleLinear().domain([0, d3.max(layout.qHyperCube.qDataPages[0].qMatrix, function(d) { return d[2].qNum; })]).range([height,0]);
-				
+															
 				// scales
 				var x = d3.scaleLinear().domain([d3.min(layout.qHyperCube.qDataPages[0].qMatrix, function(d) { return d[1].qNum; }), d3.max(layout.qHyperCube.qDataPages[0].qMatrix, function(d) { return d[1].qNum; })]).range([0, width]);
 				var y = d3.scaleLinear().domain([d3.min(layout.qHyperCube.qDataPages[0].qMatrix, function(d) { return d[2].qNum; }), d3.max(layout.qHyperCube.qDataPages[0].qMatrix, function(d) { return d[2].qNum; })]).range([height,0]);
 				
-				
-				
-				
+			
 				// gridlines in x axis function
 				function make_x_gridlines() {		
     			return d3.axisBottom(x).scale(x).ticks(5);
@@ -169,30 +159,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				function make_y_gridlines() {		
     			return d3.axisLeft(y).scale(y).ticks(5);
 				}
-				
-				
-				
-				
-				
-				/*
-				for(var i=0;i<layout.qHyperCube.qDataPages[0].qMatrix.length;i++)
-				{
-				console.log(layout.qHyperCube.qDataPages[0].qMatrix[i][1].qText);
-				}
-				*/
-				
-				
-				// gridlines in x axis function
-				function make_x_gridlines() {		
-    			return d3.axisBottom(x).scale(x).ticks(5);
-				}
-
-				// gridlines in y axis function
-				function make_y_gridlines() {		
-    			return d3.axisLeft(y).scale(y).ticks(5);
-				}
-				
-				
+			
 				
 				// add the X gridlines
   				d3.select($element[0]).select(".plot").append("g")			
@@ -214,9 +181,21 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 
 				
 				// x and y axis
+				//d3.select($element[0]).select(".x-axis").attr("class", "x-axisline").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(".0s")));
+				//d3.select($element[0]).select(".y-axis").attr("class", "y-axisline").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5));
+				
+				// x and y axis
+				//d3.select($element[0]).select(".x-axis").attr("class", "x-axisline").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format("$0.2f")));
+				//d3.select($element[0]).select(".y-axis").attr("class", "y-axisline").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5));
+				
+				
+				// x and y axis
 				d3.select($element[0]).select(".x-axis").attr("class", "x-axisline").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5));
 				d3.select($element[0]).select(".y-axis").attr("class", "y-axisline").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5));
-								
+				
+				
+				
+				
 				var xdis_xlab=$element.width()/2;
 				var ydis_xlab=$element.height()*(0.95);
 				
@@ -407,7 +386,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					console.log($scope.layout.regression.order);
 					$scope.regression = regression($scope.layout.regression.type, $scope.layout.qHyperCube.qDataPages[0].qMatrix.map(function(row){return [row[1].qNum,row[2].qNum]}), $scope.layout.regression.order);
 				}, true);
-
+				console.log($scope.layout.xaxistitle);
 				// function to generate 100 points on regression line so it can be plotted
 				$scope.generateRegressionPoints = function() {
 					var arr = [];
