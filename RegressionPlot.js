@@ -19,18 +19,42 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				component: "accordion",
 				items: {
 					dimensions: {
-						uses: "dimensions",
-						min: 1,
-						max: 1
-					},
+								uses: "dimensions",
+								min: 1,
+								max: 1
+							},
 					measures: {
-						uses: "measures",
-						min: 2,
-						max: 2
-					},
-					sorting: {
+								uses: "measures",
+								min: 2,
+								max: 2
+							},
+							
+					addons:{
+							uses:"addons",
+							items:{
+								CustomTitles:{
+									type:"items",
+									label:"Custom Titles",
+									items:{
+										Xaxistitle:{
+										type:"string",
+										label:"X Axis Title",
+										ref:"xaxistitle"
+										},
+										Yaxistitle:{
+										type:"string",
+										label:"Y Axis Title",
+										ref:"yaxistitle"
+										}
+									}
+								}
+							 }
+							},
+					
+					/*sorting: {
 						uses: "sorting"
-					},
+					},*/
+					
 					settings: {
 						uses: "settings",
 						items: {
@@ -108,7 +132,8 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 			},
 			paint: function ($element, layout) {
 				//console.log($element);
-				
+				 
+				 
 				 if(this.painted) return;
 				 this.painted = true;
 				
@@ -122,7 +147,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				d3.select($element[0]).select("svg").attr("width", $element.width()).attr("height", $element.height());
 				d3.select($element[0]).select(".plot").attr("transform", "translate(" + layout.margin.left + "," + layout.margin.top + ")");
 				
-				console.log(layout.qHyperCube.qDataPages[0].qMatrix);
+				
 				
 				// scales
 				//var x = d3.scaleLinear().domain([0, d3.max(layout.qHyperCube.qDataPages[0].qMatrix, function(d) { return d[1].qNum; })]).range([0, width]);
@@ -131,6 +156,8 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				// scales
 				var x = d3.scaleLinear().domain([d3.min(layout.qHyperCube.qDataPages[0].qMatrix, function(d) { return d[1].qNum; }), d3.max(layout.qHyperCube.qDataPages[0].qMatrix, function(d) { return d[1].qNum; })]).range([0, width]);
 				var y = d3.scaleLinear().domain([d3.min(layout.qHyperCube.qDataPages[0].qMatrix, function(d) { return d[2].qNum; }), d3.max(layout.qHyperCube.qDataPages[0].qMatrix, function(d) { return d[2].qNum; })]).range([height,0]);
+				
+				
 				
 				
 				// gridlines in x axis function
@@ -142,6 +169,30 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				function make_y_gridlines() {		
     			return d3.axisLeft(y).scale(y).ticks(5);
 				}
+				
+				
+				
+				
+				
+				/*
+				for(var i=0;i<layout.qHyperCube.qDataPages[0].qMatrix.length;i++)
+				{
+				console.log(layout.qHyperCube.qDataPages[0].qMatrix[i][1].qText);
+				}
+				*/
+				
+				
+				// gridlines in x axis function
+				function make_x_gridlines() {		
+    			return d3.axisBottom(x).scale(x).ticks(5);
+				}
+
+				// gridlines in y axis function
+				function make_y_gridlines() {		
+    			return d3.axisLeft(y).scale(y).ticks(5);
+				}
+				
+				
 				
 				// add the X gridlines
   				d3.select($element[0]).select(".plot").append("g")			
@@ -163,8 +214,8 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 
 				
 				// x and y axis
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x).ticks(5));
-				d3.select($element[0]).select(".y-axis").call(d3.axisLeft(y).ticks(5));
+				d3.select($element[0]).select(".x-axis").attr("class", "x-axisline").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5));
+				d3.select($element[0]).select(".y-axis").attr("class", "y-axisline").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5));
 								
 				var xdis_xlab=$element.width()/2;
 				var ydis_xlab=$element.height()*(0.95);
@@ -172,20 +223,43 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				var xdis_ylab=layout.margin.left*(1/4);
 				var ydis_ylab=$element.height()/2;
 				
-				// x and y label 
+				var flag1=0;
+				if(layout.xaxistitle!="")
+				{flag1=1;}
+				if(flag1==0)
+				{
+				// x label 
 				d3.select($element[0]).select(".x-label").append("text").attr("transform","translate("+xdis_xlab+","+ydis_xlab+")").style("text-anchor", "middle").text(this.backendApi.getMeasureInfos()[0].qFallbackTitle);		
-				d3.select($element[0]).select(".y-label").append("text").attr( "transform","translate("+xdis_ylab+","+ydis_ylab+") rotate(-90)").style("text-anchor", "middle").text(this.backendApi.getMeasureInfos()[1].qFallbackTitle);
+				}
+				else
+				{
+				// x label 
+				d3.select($element[0]).select(".x-label").append("text").attr("transform","translate("+xdis_xlab+","+ydis_xlab+")").style("text-anchor", "middle").text(layout.xaxistitle);		
+				} 
 				
-				  
-				 
-				 // Add the tooltip container to the vis container
+				var flag2=0;
+				if(layout.yaxistitle!="")
+				{flag2=1;}
+				if(flag2==0)
+				{
+				// y label
+				d3.select($element[0]).select(".y-label").append("text").attr( "transform","translate("+xdis_ylab+","+ydis_ylab+") rotate(-90)").style("text-anchor", "middle").text(this.backendApi.getMeasureInfos()[1].qFallbackTitle);
+				}
+				else
+				{
+				// y label	
+				d3.select($element[0]).select(".y-label").append("text").attr( "transform","translate("+xdis_ylab+","+ydis_ylab+") rotate(-90)").style("text-anchor", "middle").text(layout.yaxistitle);
+				}
+				
+				
+			  // Add the tooltip container to the vis container
               // it's invisible and its position/contents are defined during mouseover
               var tooltip = d3.select($element[0]).append("div").attr("class", "tooltip").style("opacity",0.5);
 			
               // tooltip mouseover event handler
               var tipMouseover = function(d) {
               	  
-                  var color = "white"; 
+                  var color = "white";
 				  var state=d[0].qText;
 				  var xval=d[1].qText;
 				  var yval=d[2].qText;
@@ -340,8 +414,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					var data = $scope.layout.qHyperCube.qDataPages[0].qMatrix.map(function(row){
 						return [row[1].qNum,row[2].qNum]
 					});
-					//console.log($scope.layout.qHyperCube.qDataPages[0].qMatrix)
-					//console.log(data)
+					
 					var min = data.reduce(function(min, val) { 
 						return val[0] < min ? val[0] : min; 
 					}, data[0][0]);

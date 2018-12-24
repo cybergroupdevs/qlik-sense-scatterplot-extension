@@ -36,24 +36,40 @@
 }
 
 .tooltip {
-            position: absolute;
-            width:  auto;
-            height: auto;
-            pointer-events: none;
+         position: absolute;
+         width:  auto;
+         height: auto;
+         pointer-events: none;
         }
 		
 		
 .x-label{
-			fill:#595959;
-   			shape-rendering: crispEdges;
+		fill:#595959;
+   		shape-rendering: crispEdges;
 	}
 	
 
 .y-label{
-			fill:#595959;
-   			shape-rendering: crispEdges;
+		fill:#595959;
+   		shape-rendering: crispEdges;
 	
 	}
+	
+.x-axisline{
+		stroke:lightgrey !important;
+		stroke-width:0.1 !important;
+   		shape-rendering: crispEdges !important;
+
+}
+
+.y-axisline{
+		stroke:lightgrey;
+		stroke-width:0.1;
+   		shape-rendering: crispEdges;
+
+}
+
+
 
 
 
