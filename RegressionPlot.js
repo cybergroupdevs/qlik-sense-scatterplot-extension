@@ -120,6 +120,31 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 										defaultValue: "50"
 									}
 								}
+							},
+							evaluateExBox: {
+								type: "items",
+								label: "Color Expression",
+								items: {
+									marginTop: {
+										type: "string",
+										component: "expression",
+										label: "Expression",
+										ref: "evaluateExBox.expression",
+										defaultValue: "Hello"
+									}
+								}
+							},
+							appearance: {
+								uses: "settings",
+								items: {
+									myTextBox:  {
+										ref: "appearance.evaluateExBox",
+										label: "My text box",
+										type: "string",
+										component: "expression",
+										defaultValue: "Hello"
+									}
+								}
 							}
 						}
 					}
@@ -131,10 +156,28 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				exportData: true
 			},
 			paint: function ($element, layout) {
-			
-				 if(this.painted) return;
-				 this.painted = true;
-				
+
+				//console.log($element);
+				 console.log(layout)
+				 
+				 // if(this.painted) return;
+				 // this.painted = true;
+				 // if (!document.getElementById("chart-plot")) {
+				 // 	console.log("if")
+			  //       var $newdiv1 = $( "<div id='chart-plot'></div>" )
+			  //        $element.append( $newdiv1)
+			  //        console.log($element)
+			  //    }
+			  //    else {
+			  //    	console.log("else")
+			  //       $("#" + id)
+			  //          .empty()
+			  //          .removeClass();
+
+			  //        console.log($element)
+
+			  //    }
+
 				// get points on regression line
 				var regressionPoints = this.$scope.generateRegressionPoints();
 
@@ -264,77 +307,55 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
                       .style("opacity", 0); // don't care about position!
               };
 				
+
+			  //console.log($scope.layout)           
+              
+
+              var that = this
+			  var evaluateColorCode = function(d){
+			  	console.log(that.$scope.colorCode)
+			  	try{
+			  		//console.log(colorRGB)
+			  	}catch(ex){console.log(ex)}
+			  	//return that.$scope.colorCode
+			  	var o = Math.round, r = Math.random, s = 255;
+    			return 'rgb(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ')';
+			  }
+
 				/////// DOTS //////
 				var dots = d3.select($element[0]).select(".plot").selectAll(".dot")
 					.data(layout.qHyperCube.qDataPages[0].qMatrix);
 				//enter
-				dots.enter().append("circle")
+
+    			setTimeout(() => {
+              		 dots.enter().append("circle")
 					.attr("class", "dot")
 					.attr("r",3.5)
-					.attr("stroke",  function(d) {
-						var newData = x(d[1].qNum)
-						if(newData > 500) {
-							return "black"
-						}else if(newData >300){
-							return "blue"
-						}else if(newData >100){
-							return "green"
-						}else{
-							return "yellow"
-						}
-				   })
-					.attr("fill", function(d) {
-						var newData = x(d[1].qNum)
-						if(newData > 500) {
-							return "black"
-						}else if(newData >300){
-							return "blue"
-						}else if(newData >100){
-							return "green"
-						}else{
-							return "yellow"
-						}
-				   })
+					.attr("stroke",function(d){ return evaluateColorCode(d)} )
+				 	.attr("fill",function(d){return evaluateColorCode(d)})
 					.attr("cx", function(d) { return x(d[1].qNum); })
 					.attr("cy", function(d) { return y(d[2].qNum); })
 					.on("mouseover", tipMouseover)
                 	.on("mouseout", tipMouseout);
 
+              	}, 0)
 
 
 				//exit
 				dots.exit().remove();
 				//update 
-				dots
+				setTimeout(() => {
+              		 dots.enter().append("circle")
+					.attr("class", "dot")
 					.attr("r",3.5)
-					.attr("stroke",  function(d) {
-						var newData = x(d[1].qNum)
-						if(newData > 500) {
-							return "black"
-						}else if(newData >300){
-							return "blue"
-						}else if(newData >100){
-							return "green"
-						}else{
-							return "yellow"
-						}
-				   })
-					.attr("fill", function(d) {
-						var newData = x(d[1].qNum)
-						if(newData > 500) {
-							return "black"
-						}else if(newData >300){
-							return "blue"
-						}else if(newData >100){
-							return "green"
-						}else{
-							return "yellow"
-						}
-				   })
+					.attr("stroke",function(d){ return evaluateColorCode(d)} )
+				 	.attr("fill",function(d){return evaluateColorCode(d)})
 					.attr("cx", function(d) { return x(d[1].qNum); })
 					.attr("cy", function(d) { return y(d[2].qNum); })
 					.on("mouseover", tipMouseover)
                 	.on("mouseout", tipMouseout);
+
+              	}, 0)
 
 				
 
@@ -386,7 +407,27 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					console.log($scope.layout.regression.order);
 					$scope.regression = regression($scope.layout.regression.type, $scope.layout.qHyperCube.qDataPages[0].qMatrix.map(function(row){return [row[1].qNum,row[2].qNum]}), $scope.layout.regression.order);
 				}, true);
-				console.log($scope.layout.xaxistitle);
+
+				$scope.$watch("layout.evaluateExBox", function() {
+					console.log("-1")
+					console.log($scope.layout.evaluateExBox)
+					$scope.evaluateColorExpression($scope.layout.evaluateExBox.expression)
+					//console.log($scope.evaluateColorExpression($scope.layout.evaluateExBox.expression))
+				}, true);
+				
+				$scope.evaluateColorExpression = function(expression){
+					console.log(qlik.currApp().model.engineApp)
+					qlik.currApp().model.engineApp.
+		              evaluateEx(expression)
+		              .then(function(result){
+		              	console.log(result.qValue.qText)
+		              	$scope.colorCode = result.qValue.qText
+		              	console.log($scope.colorCode)
+		              	console.log(colorRGB)
+		              	return result.qValue.qText
+		              })
+				}
+
 				// function to generate 100 points on regression line so it can be plotted
 				$scope.generateRegressionPoints = function() {
 					var arr = [];
