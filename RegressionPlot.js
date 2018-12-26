@@ -25,7 +25,17 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					measures: {
 								uses: "measures",
 								min: 2,
-								max: 2
+								max: 2,
+								items:{
+								   	NumFormat:{
+											type:"string",
+											component:"dropdown",
+											label:"numformat",
+											ref:"numformat",
+											options:[{value:'number',label:'Number'},
+													 {value:'money',label:'Money'}]
+									}
+								}
 							},
 							
 					addons:{
@@ -156,6 +166,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 			},
 			paint: function ($element, layout) {
 
+
 				 var id = "ext_" + layout.qInfo.qId;
 
 				  if (!document.getElementById(id)) {
@@ -172,6 +183,14 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				  .append("<svg><g class='plot'><g class='x-axis'></g><g class='y-axis'></g></g><g class='x-label'></g><g class=y-label'></g></svg>");
 
 				  
+
+				console.log(layout.numformat);
+				//console.log(layout.qHyperCube.qMeasureInfo[1].qNumFormat);
+			
+				 if(this.painted) return;
+				 this.painted = true;
+				
+
 				// get points on regression line
 				var regressionPoints = this.$scope.generateRegressionPoints();
 
@@ -214,23 +233,35 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
           			.tickSize(-width)
           			.tickFormat("")
      	 			)
-				
-
-				
+				/*													
+				if(layout.qHyperCube.qMeasureInfo[0].qNumFormat.qFmt=="$###,##0" && layout.qHyperCube.qMeasureInfo[1].qNumFormat.qFmt=="$###,##0")
+				{
+				d3.select($element[0]).select(".x-axis").attr("class", "x-axisline").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format("$0.2f")));
+				d3.select($element[0]).select(".y-axis").attr("class", "y-axisline").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format("$0.2f")));
+				}
+				else if(layout.qHyperCube.qMeasureInfo[0].qNumFormat.qFmt=="$###,##0")
+				{
 				// x and y axis
-				//d3.select($element[0]).select(".x-axis").attr("class", "x-axisline").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(".0s")));
-				//d3.select($element[0]).select(".y-axis").attr("class", "y-axisline").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5));
-				
+				d3.select($element[0]).select(".x-axis").attr("class", "x-axisline").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format("$0.2f")));
+				d3.select($element[0]).select(".y-axis").attr("class", "y-axisline").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5));
+				}
+				else  if(layout.qHyperCube.qMeasureInfo[1].qNumFormat.qFmt=="$###,##0")
+				{
+				d3.select($element[0]).select(".x-axis").attr("class", "x-axisline").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5));
+				d3.select($element[0]).select(".y-axis").attr("class", "y-axisline").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format("$0.2f")));
+				}
+				else
+				{
 				// x and y axis
-				//d3.select($element[0]).select(".x-axis").attr("class", "x-axisline").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format("$0.2f")));
-				//d3.select($element[0]).select(".y-axis").attr("class", "y-axisline").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5));
+				d3.select($element[0]).select(".x-axis").attr("class", "x-axisline").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5));
+				d3.select($element[0]).select(".y-axis").attr("class", "y-axisline").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5));
+				}
+				*/
 				
 				
 				// x and y axis
 				d3.select($element[0]).select(".x-axis").attr("class", "x-axisline").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5));
 				d3.select($element[0]).select(".y-axis").attr("class", "y-axisline").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5));
-				
-				
 				
 				
 				var xdis_xlab=$element.width()/2;
@@ -332,6 +363,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					.on("mouseover", tipMouseover)
                 	.on("mouseout", tipMouseout);
 
+
               	}, 0)
 
 
@@ -402,6 +434,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					$scope.regression = regression($scope.layout.regression.type, $scope.layout.qHyperCube.qDataPages[0].qMatrix.map(function(row){return [row[1].qNum,row[2].qNum]}), $scope.layout.regression.order);
 				}, true);
 
+
 				$scope.$watch("layout.evaluateExBox", function() {
 					console.log("-1")
 					console.log($scope.layout.evaluateExBox)
@@ -421,6 +454,8 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 		              	return result.qValue.qText
 		              })
 				}
+
+				
 
 				// function to generate 100 points on regression line so it can be plotted
 				$scope.generateRegressionPoints = function() {
