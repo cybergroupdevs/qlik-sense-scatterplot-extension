@@ -2,7 +2,6 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 	function ( qlik, d3, regression, template ) {
 		"use strict";
 		return {
-			template: template,
 			initialProperties: {
 				qHyperCubeDef: {
 					qDimensions: [],
@@ -157,27 +156,22 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 			},
 			paint: function ($element, layout) {
 
-				//console.log($element);
-				 console.log(layout)
-				 
-				 // if(this.painted) return;
-				 // this.painted = true;
-				 // if (!document.getElementById("chart-plot")) {
-				 // 	console.log("if")
-			  //       var $newdiv1 = $( "<div id='chart-plot'></div>" )
-			  //        $element.append( $newdiv1)
-			  //        console.log($element)
-			  //    }
-			  //    else {
-			  //    	console.log("else")
-			  //       $("#" + id)
-			  //          .empty()
-			  //          .removeClass();
+				 var id = "ext_" + layout.qInfo.qId;
 
-			  //        console.log($element)
+				  if (!document.getElementById(id)) {
+					  $element.append($("<div qv-extension />").attr("id",id));
+				  }else{
+					  console.log("found");
+					  $("#" + id)
+					  .empty()
+					  .removeClass();
+				  }
+				  
+				  $("#" + id)
+				  .addClass("regression-plot")
+				  .append("<svg><g class='plot'><g class='x-axis'></g><g class='y-axis'></g></g><g class='x-label'></g><g class=y-label'></g></svg>");
 
-			  //    }
-
+				  
 				// get points on regression line
 				var regressionPoints = this.$scope.generateRegressionPoints();
 
