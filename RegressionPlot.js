@@ -26,7 +26,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					measures: {
 								uses: "measures",
 								min: 2,
-								max: 2
+								max: 2							
 							},
 							
 					addons:{
@@ -154,30 +154,21 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				exportData: true
 			},
 			paint: function ($element, layout) {
+			 console.log(layout);
 			
-			var id = "ext_" + layout.qInfo.qId;
+				var id = "ext_" + layout.qInfo.qId;
 				console.log(id);
 
 				  if (!document.getElementById(id))
 				  {
-					  $element.append($("<div qv-extension/>").attr("id",id));
+					 $element.append($("<div qv-extension/>").attr("id",id));
 				  }
 				  else
 				  {
-					  console.log("found");
-					  $(".regression-plot")
-					  .empty();
-					  //.removeClass();
-					 
+					 console.log("found");
+					 $(".regression-plot").empty().append("<svg><g class='plot'><g class='x-axis'></g><g class='y-axis'></g></g><g class='x-label'></g><g class='y-label'></g></svg>");
 				  }
-				  
-				  
-				  
-				 $(".regression-plot")
-				 //.addClass("regression-plot")
-				 .append("<svg><g class='plot'><g class='x-axis'></g><g class='y-axis'></g></g><g class='x-label'></g><g class=y-label'></g></svg>");
-
-				
+				   			
 				// get points on regression line
 				var regressionPoints = this.$scope.generateRegressionPoints();
 
@@ -227,29 +218,28 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				d3.select($element[0]).select(".x-axis").attr("class", "x-axisline").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5));
 				d3.select($element[0]).select(".y-axis").attr("class", "y-axisline").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5));
 				*/
-				
+										
 				if(layout.numformatx=="money" && layout.numformaty=="money")
 				{
-				d3.select($element[0]).select(".x-axis").attr("class", "x-axisline").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format("$0.2f")));
-				d3.select($element[0]).select(".y-axis").attr("class", "y-axisline").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format("$0.2f")));
+				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format("$0.0f")));
+				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format("$0.0f")));
 				}
 				else if(layout.numformatx=="money")
 				{
-				d3.select($element[0]).select(".x-axis").attr("class", "x-axisline").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format("$0.2f")))
-				d3.select($element[0]).select(".y-axis").attr("class", "y-axisline").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5));
+				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format("$0.0f")));
+				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5));
 				}
 				else if(layout.numformaty=="money")
 				{
-				d3.select($element[0]).select(".x-axis").attr("class", "x-axisline").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5));
-				d3.select($element[0]).select(".y-axis").attr("class", "y-axisline").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format("$0.2f")));
+				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5));
+				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format("$0.0f")));
 				}
 				else
 				{
 				// x and y axis
-				d3.select($element[0]).select(".x-axis").attr("class", "x-axisline").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5));
-				d3.select($element[0]).select(".y-axis").attr("class", "y-axisline").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5));
+				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5));
+				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5));
 				}
-				
 				
 				
 				
