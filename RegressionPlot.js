@@ -169,7 +169,10 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 			},
 			paint: function ($element, layout) {
 			 console.log(layout);
+<<<<<<< HEAD
 			 console.log(layout.qHyperCube.qDataPages[0].qMatrix);
+=======
+>>>>>>> 97b3987e3f50b4e1dca48766fbeda24485e569e0
 			
 				var id = "ext_" + layout.qInfo.qId;
 				console.log(id);
