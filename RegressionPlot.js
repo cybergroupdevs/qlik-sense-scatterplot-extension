@@ -157,6 +157,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				export: true,
 				exportData: true
 			},
+			
 			paint: function ($element, layout) {
 			    
 				var colorDimIndex = 0;
