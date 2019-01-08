@@ -395,12 +395,12 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 >>>>>>> 339440b9a98735925d311bfede28ebc97b196039
 					.attr("stroke",function(d){ return d[colorDimIndex].qText} )
 				 	.attr("fill",function(d){return d[colorDimIndex].qText})
-					.attr("cx", function(d) { if((d[2].qNum)=="NaN")
+					/*.attr("cx", function(d) { if((d[2].qNum)=="NaN")
 												{
 												d[2].qNum=0;
 <<<<<<< HEAD
 												console.log(d[2].qNum);
-												return;
+												return x(d[2].qNum);
 												}
 												else
 												{
@@ -421,7 +421,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 												d[3].qNum=0;
 <<<<<<< HEAD
 												console.log(d[3].qNum);
-												return;
+												return y(d[3].qNum);
 												}
 												else
 												{
@@ -436,7 +436,9 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 >>>>>>> 339440b9a98735925d311bfede28ebc97b196039
 												return y(d[3].qNum); 
 												}
-												})
+												})*/
+					.attr("cx", function(d) { return x(d[2].qNum);})
+					.attr("cy", function(d) { return y(d[3].qNum);})
 					.on("mouseover", tipMouseover)
                 	.on("mouseout", tipMouseout);
 
@@ -464,12 +466,12 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 >>>>>>> 339440b9a98735925d311bfede28ebc97b196039
 					.attr("stroke",function(d){ return d[colorDimIndex].qText} )
 				 	.attr("fill",function(d){return d[colorDimIndex].qText})
-					.attr("cx", function(d) { if((d[2].qNum)=="NaN")
+					/*.attr("cx", function(d) { if((d[2].qNum)=="NaN")
 												{
 												d[2].qNum=0;
 <<<<<<< HEAD
 												console.log(d[2].qNum);
-												return;
+												return x(d[2].qNum);
 												}
 												else
 												{
@@ -490,7 +492,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 												d[3].qNum=0;
 <<<<<<< HEAD
 												console.log(d[3].qNum);
-												return;
+												return y(d[3].qNum);
 												}
 												else
 												{
@@ -505,7 +507,9 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 >>>>>>> 339440b9a98735925d311bfede28ebc97b196039
 												return y(d[3].qNum); 
 												}
-												})
+												})*/
+					.attr("cx", function(d) { return x(d[2].qNum);})
+					.attr("cy", function(d) { return y(d[3].qNum);})
 					.on("mouseover", tipMouseover)
                 	.on("mouseout", tipMouseout);
 <<<<<<< HEAD
@@ -541,7 +545,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 			},
 			controller: ["$scope", "$element", function ( $scope, $element ) {
 				//recalculate regression when user changes regression type
-				$scope.$watch("layout.regression", function() {
+				/*$scope.$watch("layout.regression", function() {
 					console.log($scope.layout.regression.order);
 <<<<<<< HEAD
 					$scope.regression = regression($scope.layout.regression.type, $scope.layout.qHyperCube.qDataPages[0].qMatrix.map(function(row){if(row[2].qNum=="NaN")
@@ -553,8 +557,16 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 						if(row[3].qNum=="NaN")
 						{row[3].qNum=0;}
 						return [row[2].qNum,row[3].qNum]}), $scope.layout.regression.order);
+				}, true);*/
+				
+				
+				$scope.$watch("layout.regression", function() {
+					console.log($scope.layout.regression.order);
+					$scope.regression = regression($scope.layout.regression.type, $scope.layout.qHyperCube.qDataPages[0].qMatrix.map(function(row){
+						return [row[2].qNum,row[3].qNum]}), $scope.layout.regression.order);
 				}, true);
-
+				
+				
 				
 				
 				$scope.evaluateColorExpression = function(expression){
@@ -573,7 +585,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				// function to generate 100 points on regression line so it can be plotted
 				$scope.generateRegressionPoints = function() {
 					var arr = [];
-					var data = $scope.layout.qHyperCube.qDataPages[0].qMatrix.map(function(row){
+					/*var data = $scope.layout.qHyperCube.qDataPages[0].qMatrix.map(function(row){
 						if(row[2].qNum=="NaN")
 						{row[2].qNum=0;}
 						if(row[3].qNum=="NaN")
@@ -583,7 +595,12 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 =======
 >>>>>>> 339440b9a98735925d311bfede28ebc97b196039
 						return [row[2].qNum,row[3].qNum]
+					});*/
+					
+					var data = $scope.layout.qHyperCube.qDataPages[0].qMatrix.map(function(row){
+						return [row[2].qNum,row[3].qNum]
 					});
+					
 					
 					var min = data.reduce(function(min, val) { 
 						return val[0] < min ? val[0] : min; 
