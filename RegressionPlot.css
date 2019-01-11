@@ -1,88 +1,43 @@
 .regression-plot {
-	height: 100%; 
-	position: relative; 
-	overflow: hidden;
+    height: 100%; 
+    position: relative; 
+    overflow: hidden;
 }
-
+​
 .regression-plot .regression {
-	fill: none;
+    fill: none;
 }
-
+​
 .x-axis{
-	fill: none;
-	stroke: lightgrey;
-	stroke-width:0.1;
-	shape-rendering: crispEdges;
+    fill: none;
+    stroke: lightgrey;
+    stroke-width:0.1;
+    shape-rendering: crispEdges;
 }
-
+​
 .x-axis line{
   stroke: lightgrey;
   opacity: 0.3;
 }
-
+​
 .x-axis path{
   stroke: lightgrey;
   opacity: 0.3;
 }
-
+​
 .y-axis{
-	fill: none;
-	stroke: lightgrey;
-	stroke-width:0.1;
-	shape-rendering: crispEdges;
+    fill: none;
+    stroke: lightgrey;
+    stroke-width:0.1;
+    shape-rendering: crispEdges;
 }
-
+​
 .y-axis line{
   stroke: lightgrey;
   opacity: 0.3;
 }
-
+​
 .y-axis path{
   stroke: lightgrey;
   opacity: 0.3;
 }
-
-
-
-.x-label{
-		font-family: sans-serif;
-		fill:#595959;
-   		shape-rendering: crispEdges;
-	}
-	
-
-.y-label{
-		font-family: sans-serif;
-		fill:#595959;
-   		shape-rendering: crispEdges;
-	
-	}
-
-
-.grid .tick {
-    stroke: lightgrey;
-    opacity: 0.3;
-}
-
-.grid path {
-      stroke-width:0.1;
-}
-
-.tooltip {
-         position: absolute;
-         width:  auto;
-         height: auto;
-         pointer-events: none;
-        }
-		
-
-		
-
-	
-
-
-
-
-
-	
-
