@@ -10,6 +10,6 @@
 	"license": "",
 	"repository": "",
 	"dependencies": {
-		"qlik-sense": ">=3.0.x"
+	"qlik-sense": ">=3.0.x"
 	}
 }
