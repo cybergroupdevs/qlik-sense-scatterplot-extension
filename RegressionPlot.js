@@ -79,11 +79,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 								}
 							 }
 							},
-					
-					/*sorting: {
-						uses: "sorting"
-					},*/
-					
+						
 					settings: {
 						uses: "settings",
 						items: {
@@ -160,15 +156,13 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 			paint: function ($element, layout) {
 			    
 				var arr=layout.qHyperCube.qDataPages[0].qMatrix;
-				console.log(arr);
+				//console.log(arr);
 				
 				function checkNull(value){
 				return value=="NaN";
 				}					
 				
 				var measure_array=new Array();
-				
-				//this.$scope.measure_array=new Array();
 				
 				arr.forEach(function(element) {
   							if(checkNull(element[0].qText) || checkNull(element[1].qText) || checkNull(element[2].qNum) || checkNull(element[3].qNum))
@@ -177,11 +171,9 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 							{measure_array.push(element)}
 							});
 							
-				console.log(measure_array);
+				//console.log(measure_array);
 				
-				this.$scope.measure_array=measure_array;
-				
-			
+				//this.$scope.measure_array=measure_array;
 				
 				var colorDimIndex = 0;
 				
@@ -200,7 +192,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				  .append("<svg><g class='plot'><g class='x-axis'></g><g class='y-axis'></g></g><g class='x-label'></g><g class='y-label'></g></svg>");
 					
 
-
+				//console.log(layout.qHyperCube.qDimensionInfo);
 				
 				layout.qHyperCube.qDimensionInfo.forEach(function(o,i){
 					if (o.IsColorDimension){
@@ -209,6 +201,29 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				});		
 				
 				
+				var generateRegressionPoints = function() {
+					var arr = [];
+					
+					var data = measure_array.map(function(row){
+						return [row[2].qNum,row[3].qNum]
+					});
+					
+					var regression_predict = regression(layout.regression.type,measure_array.map(function(row){
+						return [row[2].qNum,row[3].qNum]}), layout.regression.order);
+					
+					var min = data.reduce(function(min, val) { 
+						return val[0] < min ? val[0] : min; 
+					}, data[0][0]);
+					var max = data.reduce(function(max, val) { 
+						return val[0] > max ? val[0] : max; 
+					}, data[0][0]);
+					var extent = max - min;
+					for(var i = 0; i < 1000; i++) {
+						var x = min + (extent/1000)*i;
+						arr.push(regression_predict.predict(x));
+					}
+					return arr;
+				};
 				
 				
 				if(layout.regression.type=="none")
@@ -218,7 +233,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				else
 				{
 				// get points on regression line
-				var regressionPoints = this.$scope.generateRegressionPoints();
+				var regressionPoints = generateRegressionPoints();
 				}
 				
 				// svg width and height
@@ -226,14 +241,10 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				var height = $element.height() - layout.margin.top - layout.margin.bottom;
 				
 				d3.select($element[0]).select("svg").attr("width", $element.width()).attr("height", $element.height());
-				d3.select($element[0]).select(".plot").attr("transform", "translate(" + layout.margin.left + "," + layout.margin.top + ")");
-				
-				
-				
+				d3.select($element[0]).select(".plot").attr("transform", "translate(" + layout.margin.left + "," + layout.margin.top + ")");	
 				
 				// scales
 				var x = d3.scaleLinear().domain([d3.min(measure_array, function(d) { return d[2].qNum; }), d3.max(measure_array, function(d) { return d[2].qNum; })]).range([0, width]);
-				//var y = d3.scaleLinear().domain([d3.min(layout.qHyperCube.qDataPages[0].qMatrix, function(d) { return d[3].qNum; }), d3.max(layout.qHyperCube.qDataPages[0].qMatrix, function(d) { return d[3].qNum; })]).range([height,0]);
 				var y = d3.scaleLinear().domain([d3.min(measure_array, function(d) { return d[3].qNum; }), d3.max(measure_array, function(d) { return d[3].qNum; })]).range([height,0]);
 			
 				// gridlines in x axis function
@@ -265,7 +276,6 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
      	 			)
 				
 				
-				
 				if(layout.numformatx=="money" && layout.numformaty=="money")
 				{
 				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format("$0.0f")));
@@ -289,42 +299,36 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				}
 				
 				
-				
 				var xdis_xlab=$element.width()/2;
 				var ydis_xlab=$element.height()*(0.95);
 				
 				var xdis_ylab=layout.margin.left*(1/4);
 				var ydis_ylab=$element.height()/2;
 				
-				var flag1=0;
+				
 				if(layout.xaxistitle!="")
-				{flag1=1;}
-				if(flag1==0)
-				{
-				// x label 
-				d3.select($element[0]).select(".x-label").append("text").attr("transform","translate("+xdis_xlab+","+ydis_xlab+")").style("text-anchor", "middle").text(this.backendApi.getMeasureInfos()[0].qFallbackTitle);		
-				}
-				else
 				{
 				// x label 
 				d3.select($element[0]).select(".x-label").append("text").attr("transform","translate("+xdis_xlab+","+ydis_xlab+")").style("text-anchor", "middle").text(layout.xaxistitle);		
-				} 
-				
-				var flag2=0;
-				if(layout.yaxistitle!="")
-				{flag2=1;}
-				if(flag2==0)
-				{
-				// y label
-				d3.select($element[0]).select(".y-label").append("text").attr( "transform","translate("+xdis_ylab+","+ydis_ylab+") rotate(-90)").style("text-anchor", "middle").text(this.backendApi.getMeasureInfos()[1].qFallbackTitle);
 				}
 				else
+				{
+				// x label 
+				d3.select($element[0]).select(".x-label").append("text").attr("transform","translate("+xdis_xlab+","+ydis_xlab+")").style("text-anchor", "middle").text(this.backendApi.getMeasureInfos()[0].qFallbackTitle);		
+				} 
+				
+				
+				if(layout.yaxistitle!="")
 				{
 				// y label	
 				d3.select($element[0]).select(".y-label").append("text").attr( "transform","translate("+xdis_ylab+","+ydis_ylab+") rotate(-90)").style("text-anchor", "middle").text(layout.yaxistitle);
 				}
-				
-				
+				else
+				{
+				// y label
+				d3.select($element[0]).select(".y-label").append("text").attr( "transform","translate("+xdis_ylab+","+ydis_ylab+") rotate(-90)").style("text-anchor", "middle").text(this.backendApi.getMeasureInfos()[1].qFallbackTitle);
+				}
+			
 			  // Add the tooltip container to the vis container
               // it's invisible and its position/contents are defined during mouseover
               var tooltip = d3.select($element[0]).append("div").attr("class", "tooltip").style("opacity",0.5);
@@ -336,10 +340,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				  var state=d[0].qText;
 				  var xval=d[2].qText;
 				  var yval=d[3].qText;
-				  
-				  //var tooltipx=layout.qHyperCube.qMeasureInfo[0].qFallbackTitle;
-				  //var tooltipy=layout.qHyperCube.qMeasureInfo[1].qFallbackTitle;
-				  
+				
 				  var tooltipx=layout.xaxistitle;
 				  var tooltipy=layout.yaxistitle;
 				  
@@ -384,16 +385,15 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 			  	var o = Math.round, r = Math.random, s = 255;
     			return 'rgb(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ')';
 			  }
-
-				/////// DOTS //////
-				//var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(layout.qHyperCube.qDataPages[0].qMatrix);
+			
 				
+				
+				/////// DOTS //////				
 				var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(measure_array);
-				console.log(dots);
+				console.log(measure_array);
 				
 				
-				//enter
-				
+				//enter				
     			setTimeout(() => {
               		 dots.enter().append("circle")
 					.attr("class", "dot")
@@ -410,6 +410,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 
 				//exit
 				dots.exit().remove();
+				
 				//update 
 				setTimeout(() => {
               		 dots.enter().append("circle")
@@ -424,20 +425,20 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 
               	}, 0)
 
-				
-			
-				
 
 				//// REGRESSION LINE ////
 				var regressionLine = d3.select($element[0]).select(".plot").selectAll(".regression").data([regressionPoints]);
+				
 				//enter
 				regressionLine.enter().append("path")
 					.attr("class", "regression")
 					.attr("stroke", "black")
 					.attr("stroke-width", "1px")
 					.attr("d", d3.line().curve(d3.curveCardinal).x(function(d){ return x(d[0]); }).y(function(d){ return y(d[1]); }));
+					
 				//exit
 				regressionLine.exit().remove();
+				
 				//update
 				regressionLine
 					.attr("stroke", "black")
@@ -446,71 +447,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				//needed for export
 				return qlik.Promise.resolve();
 				
-			},
-			controller: ["$scope", "$element", function ( $scope, $element ) {
-			
-				var arr_controller=$scope.layout.qHyperCube.qDataPages[0].qMatrix;
-				console.log(arr_controller);
-				
-				function checkNull(value){
-				return value=="NaN";
-				}					
-				
-				var measure_array_controller=new Array();
-										
-				arr_controller.forEach(function(element) {
-  							if(checkNull(element[0].qText) || checkNull(element[1].qText) || checkNull(element[2].qNum) || checkNull(element[3].qNum))
-							{}
-							else
-							{measure_array_controller.push(element)}
-							});
-							
-				
-												
-				$scope.$watch("layout.regression", function() {
-					//console.log($scope.layout.regression.order);
-					$scope.regression = regression($scope.layout.regression.type,measure_array_controller.map(function(row){
-						return [row[2].qNum,row[3].qNum]}), $scope.layout.regression.order);
-				}, true);
-				
-				
-				
-				
-				$scope.evaluateColorExpression = function(expression){
-					console.log(qlik.currApp().model.engineApp)
-					qlik.currApp().model.engineApp.
-		              evaluateEx(expression)
-		              .then(function(result){
-		              	console.log(result.qValue.qText)
-		              	$scope.colorCode = result.qValue.qText
-		              	console.log($scope.colorCode)
-		              	console.log(colorRGB)
-		              	return result.qValue.qText
-		              })
-				}
-					
-				// function to generate 100 points on regression line so it can be plotted
-				$scope.generateRegressionPoints = function() {
-					var arr = [];
-					
-					var data = $scope.measure_array.map(function(row){
-						return [row[2].qNum,row[3].qNum]
-					});
-					
-					
-					var min = data.reduce(function(min, val) { 
-						return val[0] < min ? val[0] : min; 
-					}, data[0][0]);
-					var max = data.reduce(function(max, val) { 
-						return val[0] > max ? val[0] : max; 
-					}, data[0][0]);
-					var extent = max - min;
-					for(var i = 0; i < 100; i++) {
-						var x = min + (extent/100)*i;
-						arr.push($scope.regression.predict(x));
-					}
-					return arr;
-				};
-			}]
+			}
+
 		};
 	});
