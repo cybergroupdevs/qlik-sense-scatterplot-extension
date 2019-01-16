@@ -62,18 +62,18 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 										xaxisnumformat:{
 										type:"string",
 								 		component:"dropdown",
-								 		label:"x axis formatting",
+								 		label:"X-Axis Formatting",
 								 		ref:"numformatx",
-								 		options:[{value:'number',label:'number'},
-								 		  		{value:'money',label:'money'}]
+								 		options:[{value:'number',label:'Number'},
+								 		  		{value:'money',label:'Money'}]
 										},
 										yaxisnumformat:{
 										type:"string",
 								 		component:"dropdown",
-								 		label:"y axis formatting",
+								 		label:"Y-Axis Formatting",
 								 		ref:"numformaty",
-								 		options:[{value:'number',label:'number'},
-								 		  		{value:'money',label:'money'}]
+								 		options:[{value:'number',label:'Number'},
+								 		  		{value:'money',label:'Money'}]
 										}
 									  }
 								}
