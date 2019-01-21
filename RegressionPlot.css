@@ -65,7 +65,8 @@
 }
 
 .grid path {
-      stroke-width:0.1;
+	  stroke:black;
+      stroke-width:0.2;
 }
 
 .tooltip {

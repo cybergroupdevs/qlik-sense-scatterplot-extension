@@ -76,6 +76,20 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 								 		  		{value:'money',label:'Money'}]
 										}
 									  }
+								},
+								GridLines:{
+								type:"items",
+								label:"GridLines",
+								items:{
+										gridlines:{
+										type:"string",
+										component:"dropdown",
+										label:"GridLines",
+										ref:"grid",
+										options:[{value:'no',label:'No'},
+												 {value:'yes',label:'Yes'}]
+										}
+								}
 								}
 							 }
 							},
@@ -247,6 +261,9 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				var x = d3.scaleLinear().domain([d3.min(measure_array, function(d) { return d[2].qNum; }), d3.max(measure_array, function(d) { return d[2].qNum; })]).range([0, width]);
 				var y = d3.scaleLinear().domain([d3.min(measure_array, function(d) { return d[3].qNum; }), d3.max(measure_array, function(d) { return d[3].qNum; })]).range([height,0]);
 			
+				
+				if(layout.grid=="yes")
+				{
 				// gridlines in x axis function
 				function make_x_gridlines() {		
     			return d3.axisBottom(x).scale(x).ticks(5);
@@ -274,7 +291,33 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
           			.tickSize(-width)
           			.tickFormat("")
      	 			)
+				}
+				else
+				{
+				// gridlines in x axis function
+				function make_x_gridlines() {		
+    			return d3.axisBottom(x).scale(x).ticks(5);
+				}
+
+				// gridlines in y axis function
+				function make_y_gridlines() {		
+    			return d3.axisLeft(y).scale(y).ticks(5);
+				}
 				
+				
+				// add the X gridlines
+  				d3.select($element[0]).select(".plot").append("g")			
+     			 	.attr("class", "grid")
+      				.attr("transform", "translate(0," + height + ")")
+      				.call(make_x_gridlines()
+          			 )
+
+  				// add the Y gridlines
+ 				d3.select($element[0]).select(".plot").append("g")			
+     				.attr("class", "grid")
+      				.call(make_y_gridlines()
+          			)
+				}
 				
 				if(layout.numformatx=="money" && layout.numformaty=="money")
 				{
@@ -390,7 +433,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				
 				/////// DOTS //////				
 				var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(measure_array);
-				console.log(measure_array);
+				//console.log(measure_array);
 				
 				
 				//enter				
