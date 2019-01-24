@@ -82,8 +82,69 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 										ref:"xcurrency",
 										type:"string",
 										component:"dropdown",
-										options:[{value:"dollar",label:"Dollar"},
-												 {value:"euro",label:"Euro"}],
+										options:[{value:"د.إ",label:"AED"},
+													{value:"֏",label:"AMD"},
+													{value:"Kz",label:"AOA"},
+													{value:"A$",label:"AUD"},
+													{value:"₼",label:"AZN"},
+													{value:"KM",label:"BAM"},
+													{value:"৳",label:"BDT"},
+													{value:"B$",label:"BND"},
+													{value:"R$",label:"BRL"},
+													{value:"p.",label:"BYR"},
+													{value:"C$",label:"CAD"},
+													{value:"CHf",label:"CHF"},
+													{value:"$",label:"CLP"},
+													{value:"¥",label:"CNY"},
+													{value:"$",label:"COP"},
+													{value:"Kč",label:"CZK"},
+													{value:"Kr.",label:"DKK"},
+													{value:"دج",label:"DZD"},
+													{value:"E£",label:"EGP"},
+													{value:"€",label:"EUR"},
+													{value:"£",label:"GBP"},
+													{value:"HK$",label:"HKD"},
+													{value:"Rp",label:"IDR"},
+													{value:"₪",label:"ILS"},
+													{value:"₹",label:"INR"},
+													{value:"د.ا",label:"JOD"},
+													{value:"¥",label:"JPY"},
+													{value:"KSh",label:"KES"},
+													{value:"₩",label:"KRW"},
+													{value:"KD",label:"KWD"},
+													{value:"₸",label:"KZT"},
+													{value:"Rs",label:"LKR"},
+													{value:"LD",label:"LYD"},
+													{value:"DH",label:"MAD"},
+													{value:"Ar",label:"MGA"},
+													{value:"MRO",label:"MRO"},
+													{value:"Mex$",label:"MXN"},
+													{value:"RM",label:"MYR"},
+													{value:"₦",label:"NGN"},
+													{value:"kr",label:"NOK"},
+													{value:"NULL",label:"NULL"},
+													{value:"$",label:"NZD"},
+													{value:"₱",label:"PHP"},
+													{value:"₨",label:"PKR"},
+													{value:"zł",label:"PLN"},
+													{value:"QR",label:"QAR"},
+													{value:"₽",label:"RUB"},
+													{value:"SR",label:"SAR"},
+													{value:"kr",label:"SEK"},
+													{value:"S$",label:"SGD"},
+													{value:"Sk",label:"SKK"},
+													{value:"฿",label:"THB"},
+													{value:"DT",label:"TND"},
+													{value:"₺",label:"TRY"},
+													{value:"NT$",label:"TWD"},
+													{value:"₴",label:"UAH"},
+													{value:"$",label:"USD"},
+													{value:"$U",label:"UYU"},
+													{value:"VEF",label:"VEF"},
+													{value:"₫",label:"VND"},
+													{value:"CFA",label:"XOF"},
+													{value:"R",label:"ZAR"}
+													],
 										show:function(e){
 													return "money" === e.numformatx
 													}
@@ -110,8 +171,69 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 										ref:"ycurrency",
 										type:"string",
 										component:"dropdown",
-										options:[{value:"dollar",label:"Dollar"},
-												 {value:"euro",label:"Euro"}],
+										options:[{value:"د.إ",label:"AED"},
+												{value:"֏",label:"AMD"},
+												{value:"Kz",label:"AOA"},
+												{value:"A$",label:"AUD"},
+												{value:"₼",label:"AZN"},
+												{value:"KM",label:"BAM"},
+												{value:"৳",label:"BDT"},
+												{value:"B$",label:"BND"},
+												{value:"R$",label:"BRL"},
+												{value:"p.",label:"BYR"},
+												{value:"C$",label:"CAD"},
+												{value:"CHf",label:"CHF"},
+												{value:"$",label:"CLP"},
+												{value:"¥",label:"CNY"},
+												{value:"$",label:"COP"},
+												{value:"Kč",label:"CZK"},
+												{value:"Kr.",label:"DKK"},
+												{value:"دج",label:"DZD"},
+												{value:"E£",label:"EGP"},
+												{value:"€",label:"EUR"},
+												{value:"£",label:"GBP"},
+												{value:"HK$",label:"HKD"},
+												{value:"Rp",label:"IDR"},
+												{value:"₪",label:"ILS"},
+												{value:"₹",label:"INR"},
+												{value:"د.ا",label:"JOD"},
+												{value:"¥",label:"JPY"},
+												{value:"KSh",label:"KES"},
+												{value:"₩",label:"KRW"},
+												{value:"KD",label:"KWD"},
+												{value:"₸",label:"KZT"},
+												{value:"Rs",label:"LKR"},
+												{value:"LD",label:"LYD"},
+												{value:"DH",label:"MAD"},
+												{value:"Ar",label:"MGA"},
+												{value:"MRO",label:"MRO"},
+												{value:"Mex$",label:"MXN"},
+												{value:"RM",label:"MYR"},
+												{value:"₦",label:"NGN"},
+												{value:"kr",label:"NOK"},
+												{value:"NULL",label:"NULL"},
+												{value:"$",label:"NZD"},
+												{value:"₱",label:"PHP"},
+												{value:"₨",label:"PKR"},
+												{value:"zł",label:"PLN"},
+												{value:"QR",label:"QAR"},
+												{value:"₽",label:"RUB"},
+												{value:"SR",label:"SAR"},
+												{value:"kr",label:"SEK"},
+												{value:"S$",label:"SGD"},
+												{value:"Sk",label:"SKK"},
+												{value:"฿",label:"THB"},
+												{value:"DT",label:"TND"},
+												{value:"₺",label:"TRY"},
+												{value:"NT$",label:"TWD"},
+												{value:"₴",label:"UAH"},
+												{value:"$",label:"USD"},
+												{value:"$U",label:"UYU"},
+												{value:"VEF",label:"VEF"},
+												{value:"₫",label:"VND"},
+												{value:"CFA",label:"XOF"},
+												{value:"R",label:"ZAR"}
+												],
 										show:function(e){
 													return "money" === e.numformaty
 													}
@@ -357,9 +479,52 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
      				.attr("class", "grid")
       				.call(make_y_gridlines()
           			)
+				}		
+						
+				if(layout.numformatx=="money")
+				{
+				var d3loc_x={
+				 	"decimal": ".",
+ 				 	"thousands": ",",
+ 				 	"grouping": [3],
+ 				 	"currency": [layout.xcurrency, ""]
+				};
+				
+				d3.formatDefaultLocale(d3loc_x);
+				
+				var formatx="$,"+layout.decimalprecisionx;
+				console.log(formatx);
+				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(formatx)));				
+				}				
+				else
+				{
+				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(layout.decimalprecisionx)));
 				}
+		
+		
+				if(layout.numformaty=="money")
+				{
+				var d3loc_y={
+				 	"decimal": ".",
+ 				 	"thousands": ",",
+ 				 	"grouping": [3],
+ 				 	"currency": [layout.ycurrency, ""]
+				};
+				
+				d3.formatDefaultLocale(d3loc_y);
+				
+				var formaty="$,"+layout.decimalprecisiony;
+				console.log(formaty);				
+				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(formaty)));
+				}				
+				else
+				{				
+				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(layout.decimalprecisiony)));
+				}
+				
+				
 							
-								
+				/*				
 				if(layout.numformatx=="money" && layout.xcurrency=="dollar")
 				{
 				var d3loc_dollarx={
@@ -431,112 +596,8 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				{				
 				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(layout.decimalprecisiony)));
 				}
-				
-				
-				
-				/*
-				if(layout.xcurrency=="dollar")
-				{
-				var d3loc_dollar={
-				 	"decimal": ".",
- 				 	"thousands": ",",
- 				 	"grouping": [3],
- 				 	"currency": ["$", ""]
-				};
-				
-				d3.formatDefaultLocale(d3loc_dollar);
-				
-				var dollarformatx="$,"+layout.decimalprecisionx;
-				console.log(dollarformatx);				
-								
-				if(layout.numformatx=="money")
-				{
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(dollarformatx)));				
-				}
-				else
-				{				
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(layout.decimalprecisionx)));
-				}
-				
-				}
-				else if(layout.xcurrency=="euro")
-				{
-				var d3loc_euro={
-				 	"decimal": ".",
- 				 	"thousands": ",",
- 				 	"grouping": [3],
- 				 	"currency": ["€",""]
-				};
-				
-				d3.formatDefaultLocale(d3loc_euro);
-				
-				var euroformatx="$,"+layout.decimalprecisionx;
-				console.log(euroformatx);					
-				
-				if(layout.numformatx=="money")
-				{				
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(euroformatx)));
-				}
-				else
-				{
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(layout.decimalprecisionx)));
-				}
-				
-				}
-				
-				
-				
-				if(layout.ycurrency=="dollar")
-				{
-				var d3loc_dollar={
-				 	"decimal": ".",
- 				 	"thousands": ",",
- 				 	"grouping": [3],
- 				 	"currency": ["$", ""]
-				};
-				
-				d3.formatDefaultLocale(d3loc_dollar);
-				
-				var dollarformaty="$,"+layout.decimalprecisiony;
-				console.log(dollarformaty);
-								
-				if(layout.numformaty=="money")
-				{				
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(dollarformaty)));
-				}
-				else
-				{				
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(layout.decimalprecisiony)));
-				}
-				
-				}					
-				else if(layout.ycurrency=="euro")
-				{
-				var d3loc_euro={
-				 	"decimal": ".",
- 				 	"thousands": ",",
- 				 	"grouping": [3],
- 				 	"currency": ["€",""]
-				};
-				
-				d3.formatDefaultLocale(d3loc_euro);
-				
-				var euroformaty="$,"+layout.decimalprecisiony;
-				console.log(euroformaty);
-				
-				if(layout.numformaty=="money")
-				{				
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(euroformaty)));
-				}
-				else
-				{				
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(layout.decimalprecisiony)));
-				}
-				
-				}
-				
 				*/
-	
+				
 				var xdis_xlab=$element.width()/2;
 				var ydis_xlab=$element.height()*(0.95);
 				
