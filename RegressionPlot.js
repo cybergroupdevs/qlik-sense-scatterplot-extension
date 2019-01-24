@@ -10,7 +10,8 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					qInitialDataFetch: [{
 						qWidth: 4,
 						qHeight: 2000
-					}]
+					}],
+					
 				}
 			},
 			definition: {
@@ -56,44 +57,67 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 									}
 								},
 								NumberFormatting:{
+								label:"Formatting",
 								type:"items",
-								label:"Number Formatting",
 								items:{
 										xaxisnumformat:{
+										label:"X-Axis Formatting",
+										ref:"numformatx",
 										type:"string",
-								 		component:"dropdown",
-								 		label:"X-Axis Formatting",
-								 		ref:"numformatx",
-								 		options:[{value:'number',label:'Number'},
-								 		  		{value:'money',label:'Money'}]
+										component:"dropdown",
+										options:[{value:"number",label:"Number"},
+								 		  		 {value:"money",label:"Money"}]										
+										},
+										decimalprecisionx:{
+										label:"Decimal Precision",
+										ref:"decimalprecisionx",
+										type:"string",
+										defaultValue:".0f",
+										show:function(e){
+												return "number" || "money" ===  e.numformatx
+												}
+										},
+										xcurrency:{
+										label:"Currency type",
+										ref:"xcurrency",
+										type:"string",
+										component:"dropdown",
+										options:[{value:"dollar",label:"Dollar"},
+												 {value:"euro",label:"Euro"}],
+										show:function(e){
+													return "money" === e.numformatx
+													}
 										},
 										yaxisnumformat:{
-										type:"string",
-								 		component:"dropdown",
-								 		label:"Y-Axis Formatting",
-								 		ref:"numformaty",
-								 		options:[{value:'number',label:'Number'},
-								 		  		{value:'money',label:'Money'}]
-										},
-										currency:{
+										label:"Y-Axis Formatting",
+										ref:"numformaty",
 										type:"string",
 										component:"dropdown",
-										label:"Currency type",
-										ref:"currency",
-										options:[{value:'dollar',label:'Dollar'},
-												 {value:'euro',label:'Euro'}]
+										options:[{value:"number",label:"Number"},
+								 		  		 {value:"money",label:"Money"}]										
 										},
-										decimalprecision:{
-										type:"string",
-										component:"dropdown",
+										decimalprecisiony:{
 										label:"Decimal Precision",
-										ref:"decimalprecision",
-										options:[{value:'.0f',label:'Number'},
-												 {value:'.1f',label:'Decimal One Place'},
-												 {value:'.2f',label:'Decimal Two Places'}]
+										ref:"decimalprecisiony",
+										type:"string",
+										defaultValue:".0f",
+										show:function(e){
+												return "number" || "money" ===  e.numformaty
+												}
+										},
+										ycurrency:{
+										label:"Currency type",
+										ref:"ycurrency",
+										type:"string",
+										component:"dropdown",
+										options:[{value:"dollar",label:"Dollar"},
+												 {value:"euro",label:"Euro"}],
+										show:function(e){
+													return "money" === e.numformaty
+													}
 										}
 									  }
-								},
+								},				
 								GridLines:{
 								type:"items",
 								label:"GridLines",
@@ -185,8 +209,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				exportData: true
 			},
 			paint: function ($element, layout) {
-			    
-				var arr=layout.qHyperCube.qDataPages[0].qMatrix;
+			   	var arr=layout.qHyperCube.qDataPages[0].qMatrix;
 				//console.log(arr);
 				
 				function checkNull(value){
@@ -335,204 +358,185 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
       				.call(make_y_gridlines()
           			)
 				}
-				
-				
-				
-				
-				if(layout.currency=="euro")
+							
+								
+				if(layout.numformatx=="money" && layout.xcurrency=="dollar")
 				{
-				var d3loc_euro={
-				 	"decimal": ".",
- 				 	"thousands": ",",
- 				 	"grouping": [3],
- 				 	"currency": ["€",""]
-				}
-				
-				d3.formatDefaultLocale(d3loc_euro);
-				
-				var euroformat="$,"+layout.decimalprecision;
-				console.log(euroformat);
-				
-				
-				if(layout.numformatx=="money" && layout.numformaty=="money")
-				{
-				
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(euroformat)));
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(euroformat)));
-				}
-				else if(layout.numformatx=="money")
-				{
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(euroformat)));
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(layout.decimalprecision)));
-				}
-				else if(layout.numformaty=="money")
-				{
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(layout.decimalprecision)));
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(euroformat)));
-				}
-				else
-				{
-				// x and y axis
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(layout.decimalprecision)));
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(layout.decimalprecision)));
-				}
-				
-				}
-				
-				else
-				{
-				var d3loc_dollar={
+				var d3loc_dollarx={
 				 	"decimal": ".",
  				 	"thousands": ",",
  				 	"grouping": [3],
  				 	"currency": ["$", ""]
+				};
+				
+				d3.formatDefaultLocale(d3loc_dollarx);
+				
+				var dollarformatx="$,"+layout.decimalprecisionx;
+				console.log(dollarformatx);
+				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(dollarformatx)));				
 				}
-				
-				d3.formatDefaultLocale(d3loc_dollar);
-				
-				var dollarformat="$,"+layout.decimalprecision;
-								
-				if(layout.numformatx=="money" && layout.numformaty=="money")
+				else if(layout.numformatx=="money" && layout.xcurrency=="euro")
 				{
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(dollarformat)));
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(dollarformat)));
-				}
-				else if(layout.numformatx=="money")
-				{
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(dollarformat)));
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(layout.decimalprecision)));
-				}
-				else if(layout.numformaty=="money")
-				{
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(layout.decimalprecision)));
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(dollarformat)));
-				}
-				else
-				{
-				// x and y axis
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(layout.decimalprecision)));
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(layout.decimalprecision)));
-				}
-				}
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				/*							
-				if(layout.currency=="euro")
-				{
-				var d3loc_euro={
+				var d3loc_eurox={
 				 	"decimal": ".",
  				 	"thousands": ",",
  				 	"grouping": [3],
  				 	"currency": ["€",""]
-				}
+				};
 				
-				d3.formatDefaultLocale(d3loc_euro);
+				d3.formatDefaultLocale(d3loc_eurox);
 				
-				var euroformat="$,"+layout.decimalprecision;
-				console.log(euroformat);
-				
-				
-				if(layout.numformatx=="money" && layout.numformaty=="money")
-				{
-				
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(euroformat)));
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(euroformat)));
-				}
-				else if(layout.numformatx=="money")
-				{
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(euroformat)));
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5));
-				}
-				else if(layout.numformaty=="money")
-				{
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5));
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(euroformat)));
+				var euroformatx="$,"+layout.decimalprecisionx;
+				console.log(euroformatx);			
+				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(euroformatx)));
 				}
 				else
 				{
-				// x and y axis
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5));
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5));
+				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(layout.decimalprecisionx)));
 				}
 				
-				}
+			
 				
-				else
+				if(layout.numformaty=="money" && layout.ycurrency=="dollar")
 				{
-				var d3loc_dollar={
+				var d3loc_dollary={
 				 	"decimal": ".",
  				 	"thousands": ",",
  				 	"grouping": [3],
  				 	"currency": ["$", ""]
-				}
+				};
 				
-				d3.formatDefaultLocale(d3loc_dollar);
+				d3.formatDefaultLocale(d3loc_dollary);
 				
-				var dollarformat="$,"+layout.decimalprecision;
-								
-				if(layout.numformatx=="money" && layout.numformaty=="money")
-				{
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(dollarformat)));
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(dollarformat)));
+				var dollarformaty="$,"+layout.decimalprecisiony;
+				console.log(dollarformaty);				
+				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(dollarformaty)));
 				}
-				else if(layout.numformatx=="money")
+				else if(layout.numformaty=="money" && layout.ycurrency=="euro")
 				{
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(dollarformat)));
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5));
-				}
-				else if(layout.numformaty=="money")
-				{
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5));
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(dollarformat)));
+				var d3loc_euroy={
+				 	"decimal": ".",
+ 				 	"thousands": ",",
+ 				 	"grouping": [3],
+ 				 	"currency": ["€",""]
+				};
+				
+				d3.formatDefaultLocale(d3loc_euroy);
+				
+				var euroformaty="$,"+layout.decimalprecisiony;
+				console.log(euroformaty);
+				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(euroformaty)));
 				}
 				else
-				{
-				// x and y axis
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5));
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5));
+				{				
+				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(layout.decimalprecisiony)));
 				}
-				}
-				*/
+				
+				
 				
 				/*
-				if(layout.numformatx=="money" && layout.numformaty=="money")
+				if(layout.xcurrency=="dollar")
 				{
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format("$0.0f")));
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format("$0.0f")));
+				var d3loc_dollar={
+				 	"decimal": ".",
+ 				 	"thousands": ",",
+ 				 	"grouping": [3],
+ 				 	"currency": ["$", ""]
+				};
+				
+				d3.formatDefaultLocale(d3loc_dollar);
+				
+				var dollarformatx="$,"+layout.decimalprecisionx;
+				console.log(dollarformatx);				
+								
+				if(layout.numformatx=="money")
+				{
+				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(dollarformatx)));				
 				}
-				else if(layout.numformatx=="money")
-				{
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format("$0.0f")));
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5));
+				else
+				{				
+				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(layout.decimalprecisionx)));
 				}
-				else if(layout.numformaty=="money")
+				
+				}
+				else if(layout.xcurrency=="euro")
 				{
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5));
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format("$0.0f")));
+				var d3loc_euro={
+				 	"decimal": ".",
+ 				 	"thousands": ",",
+ 				 	"grouping": [3],
+ 				 	"currency": ["€",""]
+				};
+				
+				d3.formatDefaultLocale(d3loc_euro);
+				
+				var euroformatx="$,"+layout.decimalprecisionx;
+				console.log(euroformatx);					
+				
+				if(layout.numformatx=="money")
+				{				
+				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(euroformatx)));
 				}
 				else
 				{
-				// x and y axis
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5));
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5));
+				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(layout.decimalprecisionx)));
 				}
-				*/
 				
+				}
+				
+				
+				
+				if(layout.ycurrency=="dollar")
+				{
+				var d3loc_dollar={
+				 	"decimal": ".",
+ 				 	"thousands": ",",
+ 				 	"grouping": [3],
+ 				 	"currency": ["$", ""]
+				};
+				
+				d3.formatDefaultLocale(d3loc_dollar);
+				
+				var dollarformaty="$,"+layout.decimalprecisiony;
+				console.log(dollarformaty);
+								
+				if(layout.numformaty=="money")
+				{				
+				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(dollarformaty)));
+				}
+				else
+				{				
+				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(layout.decimalprecisiony)));
+				}
+				
+				}					
+				else if(layout.ycurrency=="euro")
+				{
+				var d3loc_euro={
+				 	"decimal": ".",
+ 				 	"thousands": ",",
+ 				 	"grouping": [3],
+ 				 	"currency": ["€",""]
+				};
+				
+				d3.formatDefaultLocale(d3loc_euro);
+				
+				var euroformaty="$,"+layout.decimalprecisiony;
+				console.log(euroformaty);
+				
+				if(layout.numformaty=="money")
+				{				
+				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(euroformaty)));
+				}
+				else
+				{				
+				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(layout.decimalprecisiony)));
+				}
+				
+				}
+				
+				*/
+	
 				var xdis_xlab=$element.width()/2;
 				var ydis_xlab=$element.height()*(0.95);
 				
