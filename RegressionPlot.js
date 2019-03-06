@@ -248,30 +248,38 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 										Xaxislimitmin:{
 										type:"string",
 										label:"X Axis Min Limit",
-										//////defaultValue:0,
 										ref:"xaxislimitmin"
 										},
 										Xaxislimitmax:{
 										type:"string",
 										label:"X Axis Max Limit",
-										/////////defaultValue:1000,
 										ref:"xaxislimitmax"
 										},
 										Yaxislimitmin:{
 										type:"string",
 										label:"Y Axis Min Limit",
-										////////defaultValue:0,
 										ref:"yaxislimitmin"
 										},
 										Yaxislimitmax:{
 										type:"string",
 										label:"Y Axis Max Limit",
-										/////////defaultValue:1000,
 										ref:"yaxislimitmax"
 										}
 									}
 								},
 								
+								Bubbleradius:{
+								type:"items",
+								label:"Bubble Radius",
+								items:{
+									Radius:{
+									type:"string",
+									label:"Radius",
+									ref:"bubbleradius",
+									defaultValue:"3.5"
+									}
+								}
+								},
 								GridLines:{
 								type:"items",
 								label:"GridLines",
@@ -805,7 +813,44 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				
 				var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(measure_array);
 				
+				////////console.log(layout.bubbleradius);
 				
+				if(layout.bubbleradius!="")
+				{
+				//enter				
+    			setTimeout(() => {
+              		 dots.enter().append("circle")
+					.attr("class", "dot")
+					.attr("r",layout.bubbleradius)
+					.attr("stroke",function(d){ return d[colorDimIndex].qText} )
+				 	.attr("fill",function(d){return d[colorDimIndex].qText})
+					.attr("cx", function(d) { return x(d[2].qNum);})
+					.attr("cy", function(d) { return y(d[3].qNum);})
+					.on("mouseover", tipMouseover)
+                	.on("mouseout", tipMouseout);
+
+              	}, 0)
+
+				//exit
+				dots.exit().remove();
+				
+				//update 
+				setTimeout(() => {
+              		 dots.enter().append("circle")
+					.attr("class", "dot")
+					.attr("r",layout.bubbleradius)
+					.attr("stroke",function(d){ return d[colorDimIndex].qText} )
+				 	.attr("fill",function(d){return d[colorDimIndex].qText})
+					.attr("cx", function(d) { return x(d[2].qNum);})
+					.attr("cy", function(d) { return y(d[3].qNum);})
+					.on("mouseover", tipMouseover)
+                	.on("mouseout", tipMouseout);
+
+              	}, 0)
+				
+				}
+				else
+				{
 				//enter				
     			setTimeout(() => {
               		 dots.enter().append("circle")
@@ -837,6 +882,9 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 
               	}, 0)
 				
+				}
+				
+								
 				
 				/*
 				//enter				
