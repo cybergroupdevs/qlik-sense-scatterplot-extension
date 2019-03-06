@@ -239,7 +239,39 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 													}
 										}
 									  }
-								},				
+								},
+								
+								AxisLimits:{
+									type:"items",
+									label:"Axis Limits",
+									items:{
+										Xaxislimitmin:{
+										type:"string",
+										label:"X Axis Min Limit",
+										//////defaultValue:0,
+										ref:"xaxislimitmin"
+										},
+										Xaxislimitmax:{
+										type:"string",
+										label:"X Axis Max Limit",
+										/////////defaultValue:1000,
+										ref:"xaxislimitmax"
+										},
+										Yaxislimitmin:{
+										type:"string",
+										label:"Y Axis Min Limit",
+										////////defaultValue:0,
+										ref:"yaxislimitmin"
+										},
+										Yaxislimitmax:{
+										type:"string",
+										label:"Y Axis Max Limit",
+										/////////defaultValue:1000,
+										ref:"yaxislimitmax"
+										}
+									}
+								},
+								
 								GridLines:{
 								type:"items",
 								label:"GridLines",
@@ -254,6 +286,10 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 										}
 								}
 								}
+								
+								
+								
+								
 							 }
 							},
 						
@@ -339,13 +375,33 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				}					
 				
 				var measure_array=new Array();
+					
 				
+				arr.forEach(function(element) {
+  							if(checkNull(element[0].qText) || checkNull(element[1].qText) || checkNull(element[2].qNum) || checkNull(element[3].qNum))
+							{}
+							else if(layout.xaxislimitmin!="" & element[2].qNum<layout.xaxislimitmin)
+							{}
+							else if(layout.xaxislimitmax!="" & element[2].qNum>layout.xaxislimitmax)
+							{}
+							else if(layout.yaxislimitmin!="" & element[3].qNum<layout.yaxislimitmin)
+							{}
+							else if(layout.yaxislimitmax!="" & element[3].qNum>layout.yaxislimitmax)
+							{}
+							else
+							{measure_array.push(element)}
+							});
+							
+				
+				
+				/*
 				arr.forEach(function(element) {
   							if(checkNull(element[0].qText) || checkNull(element[1].qText) || checkNull(element[2].qNum) || checkNull(element[3].qNum))
 							{}
 							else
 							{measure_array.push(element)}
 							});
+				*/
 				
 				
 				var colorDimIndex = 0;
@@ -383,12 +439,62 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				var y = d3.scaleLinear().domain([d3.min(measure_array, function(d) { return d[3].qNum; }), d3.max(measure_array, function(d) { return d[3].qNum; })]).range([height,0]);
 				*/
 			
-				// scales
+			
+				/*
+				// scales Used
 				var x = d3.scaleLinear().domain([0, d3.max(measure_array, function(d) { return d[2].qNum; })]).range([0, width]);
 				var y = d3.scaleLinear().domain([0, d3.max(measure_array, function(d) { return d[3].qNum; })]).range([height,0]);
+				*/
+				
+				/*
+				// scales Used
+				var x = d3.scaleLinear().domain([layout.xaxislimitmin, layout.xaxislimitmax]).range([0, width]);
+				var y = d3.scaleLinear().domain([layout.yaxislimitmin, layout.yaxislimitmax]).range([height,0]);
+				*/
+				
+				
+				if(layout.xaxislimitmin!=""  &  layout.xaxislimitmax!="")
+				{
+				var x = d3.scaleLinear().domain([layout.xaxislimitmin, layout.xaxislimitmax]).range([0, width]);
+				}
+				else if(layout.xaxislimitmin!="")
+				{
+				var x = d3.scaleLinear().domain([layout.xaxislimitmin, d3.max(measure_array, function(d) { return d[2].qNum; })]).range([0, width]);
+				}
+				else if(layout.xaxislimitmax!="")
+				{
+				var x = d3.scaleLinear().domain([0, layout.xaxislimitmax]).range([0, width]);
+				}
+				else
+				{
+				var x = d3.scaleLinear().domain([0, d3.max(measure_array, function(d) { return d[2].qNum; })]).range([0, width]);
+				}
 			
 			
+				if(layout.yaxislimitmin!=""  &  layout.yaxislimitmax!="")
+				{
+				var y = d3.scaleLinear().domain([layout.yaxislimitmin, layout.yaxislimitmax]).range([height,0]);
+				}
+				else if(layout.yaxislimitmin!="")
+				{
+				var y = d3.scaleLinear().domain([layout.yaxislimitmin, d3.max(measure_array, function(d) { return d[3].qNum; })]).range([height,0]);
+				}
+				else if(layout.yaxislimitmax!="")
+				{
+				var y = d3.scaleLinear().domain([0, layout.yaxislimitmax]).range([height,0]);
+				}		
+				else
+				{
+				var y = d3.scaleLinear().domain([0, d3.max(measure_array, function(d) { return d[3].qNum; })]).range([height,0]);
+				}
+				
 			
+				//console.log(layout);
+				//console.log(layout.xaxislimitmin);
+				//console.log(layout.xaxislimitmax);
+				//console.log(layout.yaxislimitmin);
+				//console.log(layout.yaxislimitmax);
+				
 				
 				/*
 				if(layout.regression.type=="none")
@@ -459,9 +565,45 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 						return val[0] > max ? val[0] : max; 
 					}, data[0][0]);
 					var extent = max - min;
+					var max1=layout.xaxislimitmax;
+					var min1=layout.xaxislimitmin;
+					
+					var extent1 =max1-min1;
+					var extent2 =max1-min;
+										
+					console.log(extent1);
 					for(var i = 0; i < 1000; i++) {
-						//var x = min + (extent/1000)*i;
+						
+						if(layout.xaxislimitmin!="" & layout.xaxislimitmax!="")
+						{
+						var x = min + (extent1/1000)*i;
+						}
+						else if(layout.xaxislimitmin!="")
+						{
+						var x = min + (extent/1000)*i;
+						}
+						else if(layout.xaxislimitmax!="")
+						{
+						var x = min + (extent2/1000)*i;
+						}
+						else
+						{
 						var x = 0 + (extent/1000)*i;
+						}
+						
+						/*
+						if(layout.xaxislimitmin!="")
+						{
+						var x = min1 + (extent1/1000)*i;
+						}
+						else
+						{
+						var x = min + (extent/1000)*i;
+						}
+						*/
+						
+						/////////////////////var x = min + (extent/1000)*i;
+						//////////var x = 0 + (extent/1000)*i;
 						arr.push(regression_predict.predict(x));
 					}
 					return arr;
@@ -663,6 +805,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				
 				var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(measure_array);
 				
+				
 				//enter				
     			setTimeout(() => {
               		 dots.enter().append("circle")
@@ -693,7 +836,45 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
                 	.on("mouseout", tipMouseout);
 
               	}, 0)
+				
+				
+				/*
+				//enter				
+    			setTimeout(() => {
+              		 dots.enter().append("circle")
+					.attr("class", "dot")
+					.attr("r",3.5)
+					.attr("stroke",function(d){ return d[colorDimIndex].qText} )
+				 	.attr("fill",function(d){return d[colorDimIndex].qText})
+					.attr("cx", function(d) { return x(d[2].qNum);})
+					.attr("cy", function(d) { return y(d[3].qNum);})
+					.on("mouseover", tipMouseover)
+                	.on("mouseout", tipMouseout);
 
+              	}, 0)
+
+				//exit
+				dots.exit().remove();
+				
+				//update 
+				setTimeout(() => {
+              		 dots.enter().append("circle")
+					.attr("class", "dot")
+					.attr("r",3.5)
+					.attr("stroke",function(d){ return d[colorDimIndex].qText} )
+				 	.attr("fill",function(d){return d[colorDimIndex].qText})
+					.attr("cx", function(d) { return x(d[2].qNum);})
+					.attr("cy", function(d) { return y(d[3].qNum);})
+					.on("mouseover", tipMouseover)
+                	.on("mouseout", tipMouseout);
+
+              	}, 0)
+				*/
+				
+				
+				
+				
+				
 				/*
 				//// REGRESSION LINE ////
 				var regressionLine = d3.select($element[0]).select(".plot").selectAll(".regression").data([regressionPoints]);
