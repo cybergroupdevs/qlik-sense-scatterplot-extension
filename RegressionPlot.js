@@ -548,7 +548,24 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				else if(layout.regression.type == "equilibriumline")
 				{
 					var generateRegressionPoints = function() {
+					////////var arr = [[0,0],[1000,1000]];
+					
+					if(layout.xaxislimitmin!="" & layout.yaxislimitmin!="")
+					{
+					var arr = [[layout.xaxislimitmin,layout.yaxislimitmin],[1000,1000]];
+					}
+					else if(layout.xaxislimitmin!="")
+					{
+					var arr = [[layout.xaxislimitmin,0],[1000,1000]];
+					}
+					else if(layout.yaxislimitmin!="")
+					{
+					var arr = [[0,layout.yaxislimitmin],[1000,1000]];
+					}
+					else
+					{
 					var arr = [[0,0],[1000,1000]];
+					}
 					
 					return arr;
 					};									
