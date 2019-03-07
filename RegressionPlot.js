@@ -267,7 +267,27 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 										}
 									}
 								},
-								
+								Bubbleradius:{
+								type:"items",
+								label:"Bubble Radius",
+								items:{
+								settings:{
+										items:{
+											Radius:{
+											type:"number",
+											component:"slider",
+											label:"Radius",
+											ref:"bubbleradius",
+											min: 0,
+											max: 10,
+											step: 0.5,
+											///defaultValue:"3.5"
+											}
+										}
+								}
+								}
+								},
+								/*
 								Bubbleradius:{
 								type:"items",
 								label:"Bubble Radius",
@@ -280,6 +300,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 									}
 								}
 								},
+								*/
 								GridLines:{
 								type:"items",
 								label:"GridLines",
@@ -832,6 +853,39 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				
 				////////console.log(layout.bubbleradius);
 				
+				
+				//enter				
+    			setTimeout(() => {
+              		 dots.enter().append("circle")
+					.attr("class", "dot")
+					.attr("r",layout.bubbleradius)
+					.attr("stroke",function(d){ return d[colorDimIndex].qText} )
+				 	.attr("fill",function(d){return d[colorDimIndex].qText})
+					.attr("cx", function(d) { return x(d[2].qNum);})
+					.attr("cy", function(d) { return y(d[3].qNum);})
+					.on("mouseover", tipMouseover)
+                	.on("mouseout", tipMouseout);
+
+              	}, 0)
+
+				//exit
+				dots.exit().remove();
+				
+				//update 
+				setTimeout(() => {
+              		 dots.enter().append("circle")
+					.attr("class", "dot")
+					.attr("r",layout.bubbleradius)
+					.attr("stroke",function(d){ return d[colorDimIndex].qText} )
+				 	.attr("fill",function(d){return d[colorDimIndex].qText})
+					.attr("cx", function(d) { return x(d[2].qNum);})
+					.attr("cy", function(d) { return y(d[3].qNum);})
+					.on("mouseover", tipMouseover)
+                	.on("mouseout", tipMouseout);
+
+              	}, 0)
+				
+				/*
 				if(layout.bubbleradius!="")
 				{
 				//enter				
@@ -900,7 +954,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
               	}, 0)
 				
 				}
-				
+				*/
 								
 				
 				/*
