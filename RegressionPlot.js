@@ -240,7 +240,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 										}
 									  }
 								},
-								
+								/*
 								AxisLimits:{
 									type:"items",
 									label:"Axis Limits",
@@ -267,17 +267,25 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 										}
 									}
 								},
-								
+								*/
 								Bubbleradius:{
 								type:"items",
 								label:"Bubble Radius",
 								items:{
-									Radius:{
-									type:"string",
-									label:"Radius",
-									ref:"bubbleradius",
-									defaultValue:"3.5"
-									}
+								settings:{
+										items:{
+											Radius:{
+											type:"number",
+											component:"slider",
+											label:"Radius",
+											ref:"bubbleradius",
+											min: 0,
+											max: 10,
+											step: 0.5,
+											///defaultValue:"3.5"
+											}
+										}
+								}
 								}
 								},
 								GridLines:{
@@ -294,10 +302,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 										}
 								}
 								}
-								
-								
-								
-								
+														
 							 }
 							},
 						
@@ -376,46 +381,108 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				exportData: true
 			},
 			paint: function ($element, layout) {
-			   	var arr=layout.qHyperCube.qDataPages[0].qMatrix;
-								
+			
+				
 				function checkNull(value){
 				return value=="NaN";
-				}					
+				}	
+
+				/*
+				function dataArray()
+				{
+			   	var arr=layout.qHyperCube.qDataPages[0].qMatrix;
 				
 				var measure_array=new Array();
-					
 				
 				arr.forEach(function(element) {
   							if(checkNull(element[0].qText) || checkNull(element[1].qText) || checkNull(element[2].qNum) || checkNull(element[3].qNum))
-							{}
-							else if(layout.xaxislimitmin!="" & element[2].qNum<layout.xaxislimitmin)
-							{}
-							else if(layout.xaxislimitmax!="" & element[2].qNum>layout.xaxislimitmax)
-							{}
-							else if(layout.yaxislimitmin!="" & element[3].qNum<layout.yaxislimitmin)
-							{}
-							else if(layout.yaxislimitmax!="" & element[3].qNum>layout.yaxislimitmax)
 							{}
 							else
 							{measure_array.push(element)}
 							});
 							
+				return measure_array;
+				}
 				
+				console.log(dataArray());
+				*/
 				
-				/*
+				var arr=layout.qHyperCube.qDataPages[0].qMatrix;
+				
+				var measure_array=new Array();
+				
 				arr.forEach(function(element) {
   							if(checkNull(element[0].qText) || checkNull(element[1].qText) || checkNull(element[2].qNum) || checkNull(element[3].qNum))
 							{}
 							else
 							{measure_array.push(element)}
 							});
+							
+							
+
+
+				function make_x_gridlines()
+				{
+				return d3.axisBottom(x).scale(x).ticks(5);
+				}
+
+				function make_y_gridlines()
+				{
+				return d3.axisLeft(y).scale(y).ticks(5);	
+				}
+				
+
+
+				/*
+				function dotsplot(dataarr,radius,colorDimIndex,xscale,yscale,tipMouseover,tipMouseout)
+				{
+				var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(dataarr);
+				
+				//enter	
+				
+              		 dots.enter().append("circle")
+					.attr("class", "dot")
+					.attr("r",radius)
+					.attr("stroke",function(d){ return d[colorDimIndex].qText} )
+				 	.attr("fill",function(d){return d[colorDimIndex].qText})
+					.attr("cx", function(d) { return xscale(d[2].qNum);})
+					.attr("cy", function(d) { return yscale(d[3].qNum);})
+					.on("mouseover", tipMouseover)
+                	.on("mouseout", tipMouseout);
+							
+				//exit
+				dots.exit().remove();
+				
+				}
 				*/
-				
-				
+
+
 				var colorDimIndex = 0;
+				var width = $element.width() - layout.margin.left - layout.margin.right;
+				var height = $element.height() - layout.margin.top - layout.margin.bottom;
+				var x = d3.scaleLinear().domain([0, d3.max(measure_array, function(d) { return d[2].qNum; })]).range([0, width]).nice();
+				var y = d3.scaleLinear().domain([0, d3.max(measure_array, function(d) { return d[3].qNum; })]).range([height,0]).nice();
+				var xdis_xlab=$element.width()/2;
+				var ydis_xlab=$element.height()*(0.95);
+				/////var xdis_ylab=layout.margin.left*(1/4);
+				var xdis_ylab=layout.margin.left*(-0.75);
+				var ydis_ylab=$element.height()/2;
+				var formatx="$,"+layout.decimalprecisionx;
+				var formaty="$,"+layout.decimalprecisiony;
+				var radius=layout.bubbleradius;
+				var tooltipx=layout.xaxistitle;
+				var tooltipy=layout.yaxistitle;
+				var tipMouseover;
+				var tipMouseout;
+				var xgrid=make_x_gridlines();
+				var ygrid=make_y_gridlines();
+
+
+				
+				
+
 				
 				var id = "ext_" + layout.qInfo.qId;
-
 				  if (!document.getElementById(id)) {
 					  $element.append($("<div qv-extension />").attr("id",id));
 				  }else{
@@ -423,278 +490,79 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					  .empty()
 					  .removeClass();
 				  }
-				  
 				  $("#" + id)
 				  .addClass("regression-plot")
 				  .append("<svg><g class='plot'><g class='x-axis'></g><g class='y-axis'></g></g><g class='x-label'></g><g class='y-label'></g></svg>");
-					
+				
+				
+				//var colorDimIndex = 0;
 				layout.qHyperCube.qDimensionInfo.forEach(function(o,i){
 					if (o.IsColorDimension){
 						colorDimIndex = i;
 					}
-				});		
-				
-				// svg width and height
-				var width = $element.width() - layout.margin.left - layout.margin.right;
-				var height = $element.height() - layout.margin.top - layout.margin.bottom;
-				
-				d3.select($element[0]).select("svg").attr("width", $element.width()).attr("height", $element.height());
-				d3.select($element[0]).select(".plot").attr("transform", "translate(" + layout.margin.left + "," + layout.margin.top + ")");	
-				
-				/*
-				// scales
-				var x = d3.scaleLinear().domain([d3.min(measure_array, function(d) { return d[2].qNum; }), d3.max(measure_array, function(d) { return d[2].qNum; })]).range([0, width]);
-				var y = d3.scaleLinear().domain([d3.min(measure_array, function(d) { return d[3].qNum; }), d3.max(measure_array, function(d) { return d[3].qNum; })]).range([height,0]);
-				*/
-			
-			
-				/*
-				// scales Used
-				var x = d3.scaleLinear().domain([0, d3.max(measure_array, function(d) { return d[2].qNum; })]).range([0, width]);
-				var y = d3.scaleLinear().domain([0, d3.max(measure_array, function(d) { return d[3].qNum; })]).range([height,0]);
-				*/
-				
-				/*
-				// scales Used
-				var x = d3.scaleLinear().domain([layout.xaxislimitmin, layout.xaxislimitmax]).range([0, width]);
-				var y = d3.scaleLinear().domain([layout.yaxislimitmin, layout.yaxislimitmax]).range([height,0]);
-				*/
-				
-				
-				if(layout.xaxislimitmin!=""  &  layout.xaxislimitmax!="")
-				{
-				var x = d3.scaleLinear().domain([layout.xaxislimitmin, layout.xaxislimitmax]).range([0, width]);
-				}
-				else if(layout.xaxislimitmin!="")
-				{
-				var x = d3.scaleLinear().domain([layout.xaxislimitmin, d3.max(measure_array, function(d) { return d[2].qNum; })]).range([0, width]);
-				}
-				else if(layout.xaxislimitmax!="")
-				{
-				var x = d3.scaleLinear().domain([0, layout.xaxislimitmax]).range([0, width]);
-				}
-				else
-				{
-				var x = d3.scaleLinear().domain([0, d3.max(measure_array, function(d) { return d[2].qNum; })]).range([0, width]);
-				}
-			
-			
-				if(layout.yaxislimitmin!=""  &  layout.yaxislimitmax!="")
-				{
-				var y = d3.scaleLinear().domain([layout.yaxislimitmin, layout.yaxislimitmax]).range([height,0]);
-				}
-				else if(layout.yaxislimitmin!="")
-				{
-				var y = d3.scaleLinear().domain([layout.yaxislimitmin, d3.max(measure_array, function(d) { return d[3].qNum; })]).range([height,0]);
-				}
-				else if(layout.yaxislimitmax!="")
-				{
-				var y = d3.scaleLinear().domain([0, layout.yaxislimitmax]).range([height,0]);
-				}		
-				else
-				{
-				var y = d3.scaleLinear().domain([0, d3.max(measure_array, function(d) { return d[3].qNum; })]).range([height,0]);
-				}
-				
-			
-				//console.log(layout);
-				//console.log(layout.xaxislimitmin);
-				//console.log(layout.xaxislimitmax);
-				//console.log(layout.yaxislimitmin);
-				//console.log(layout.yaxislimitmax);
+				});
 				
 				
 				/*
-				if(layout.regression.type=="none")
-				{
-					var regressionPoints = [];
-				}
-				else if(layout.regression.type == "equilibriumline")
-				{
-					var generateRegressionPoints = function() {
-					var arr = [];
-					
-					var data = measure_array.map(function(row){
-						return [row[2].qNum,row[3].qNum]
-					});							
-					var min = data.reduce(function(min, val) { 
-						return val[0] < min ? val[0] : min; 
-					}, data[0][0]);
-					var max = data.reduce(function(max, val) { 
-						return val[0] > max ? val[0] : max; 
-					}, data[0][0]);
-					var extent = max - min;
-					for(var i = 0; i < 1000; i++) {
-						//var x = min + (extent/1000)*i;
-						var x =0+(extent/1000)*i;
-						arr.push([x,-x+height]);									
-						}
-					
-					//console.log("reg_array"+arr);
-					return arr;
-					};									
-					var regressionPoints = generateRegressionPoints();
-					//console.log(regressionPoints);
-				}
-				else
-				*/
+			 
+              var that = this
+			  var evaluateColorCode = function(d){
+			  	console.log(that.$scope.colorCode)
+			  	try{
+			  		
+			  	}catch(ex){console.log(ex)}
+			  	
+			  	var o = Math.round, r = Math.random, s = 255;
+    			return 'rgb(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ')';
+			  }
+			*/
 				
+				var svg=d3.select($element[0]).select("svg").attr("width", $element.width()).attr("height", $element.height());
+				var zoom=d3.zoom().on("zoom",zoomed);
+				svg.call(zoom);
+				var plot=d3.select($element[0]).select(".plot").attr("transform", "translate(" + layout.margin.left + "," + layout.margin.top + ")");	
 				
-				
-				if(layout.regression.type=="none")
-				{
-					var regressionPoints = [];
-				}
-				else if(layout.regression.type == "equilibriumline")
-				{
-					var generateRegressionPoints = function() {
-					////////var arr = [[0,0],[1000,1000]];
-					
-					if(layout.xaxislimitmin!="" & layout.yaxislimitmin!="")
-					{
-					var arr = [[layout.xaxislimitmin,layout.yaxislimitmin],[1000,1000]];
-					}
-					else if(layout.xaxislimitmin!="")
-					{
-					var arr = [[layout.xaxislimitmin,0],[1000,1000]];
-					}
-					else if(layout.yaxislimitmin!="")
-					{
-					var arr = [[0,layout.yaxislimitmin],[1000,1000]];
-					}
-					else
-					{
-					var arr = [[0,0],[1000,1000]];
-					}
-					
-					return arr;
-					};									
-					var regressionPoints = generateRegressionPoints();					
-				}
-				else
-				{
-					var generateRegressionPoints = function() {
-					var arr = [];
-					
-					var data = measure_array.map(function(row){
-						return [row[2].qNum,row[3].qNum]
-					});
-					
-					var regression_predict = regression(layout.regression.type,measure_array.map(function(row){
-						return [row[2].qNum,row[3].qNum]}), layout.regression.order);
-					
-					var min = data.reduce(function(min, val) { 
-						return val[0] < min ? val[0] : min; 
-					}, data[0][0]);
-					var max = data.reduce(function(max, val) { 
-						return val[0] > max ? val[0] : max; 
-					}, data[0][0]);
-					var extent = max - min;
-					var max1=layout.xaxislimitmax;
-					var min1=layout.xaxislimitmin;
-					
-					var extent1 =max1-min1;
-					var extent2 =max1-min;
-										
-					console.log(extent1);
-					for(var i = 0; i < 1000; i++) {
-						
-						if(layout.xaxislimitmin!="" & layout.xaxislimitmax!="")
-						{
-						var x = min + (extent1/1000)*i;
-						}
-						else if(layout.xaxislimitmin!="")
-						{
-						var x = min + (extent/1000)*i;
-						}
-						else if(layout.xaxislimitmax!="")
-						{
-						var x = min + (extent2/1000)*i;
-						}
-						else
-						{
-						var x = 0 + (extent/1000)*i;
-						}
-						
-						/*
-						if(layout.xaxislimitmin!="")
-						{
-						var x = min1 + (extent1/1000)*i;
-						}
-						else
-						{
-						var x = min + (extent/1000)*i;
-						}
-						*/
-						
-						/////////////////////var x = min + (extent/1000)*i;
-						//////////var x = 0 + (extent/1000)*i;
-						arr.push(regression_predict.predict(x));
-					}
-					return arr;
-					};
-					var regressionPoints = generateRegressionPoints();
-					//console.log(regressionPoints);
-				}
-				
+
 				
 				if(layout.grid=="yes")
 				{
-				// gridlines in x axis function
-				function make_x_gridlines() {		
-    			return d3.axisBottom(x).scale(x).ticks(5);
-				}
-
-				// gridlines in y axis function
-				function make_y_gridlines() {		
-    			return d3.axisLeft(y).scale(y).ticks(5);
-				}
-			
 				
 				// add the X gridlines
-  				d3.select($element[0]).select(".plot").append("g")			
+  				var X_gridlines=d3.select($element[0]).select(".plot").append("g")			
      			 	.attr("class", "grid")
       				.attr("transform", "translate(0," + height + ")")
-      				.call(make_x_gridlines()
+      				.call(xgrid
           			.tickSize(-height)
           			.tickFormat("")
      				 )
 
   				// add the Y gridlines
- 				d3.select($element[0]).select(".plot").append("g")			
+ 				var Y_gridlines=d3.select($element[0]).select(".plot").append("g")			
      				.attr("class", "grid")
-      				.call(make_y_gridlines()
+      				.call(ygrid
           			.tickSize(-width)
           			.tickFormat("")
      	 			)
 				}
 				else
 				{
-				// gridlines in x axis function
-				function make_x_gridlines() {		
-    			return d3.axisBottom(x).scale(x).ticks(5);
-				}
-
-				// gridlines in y axis function
-				function make_y_gridlines() {		
-    			return d3.axisLeft(y).scale(y).ticks(5);
-				}
-				
-				
 				// add the X gridlines
-  				d3.select($element[0]).select(".plot").append("g")			
+  				var X_gridlines=d3.select($element[0]).select(".plot").append("g")			
      			 	.attr("class", "grid")
       				.attr("transform", "translate(0," + height + ")")
-      				.call(make_x_gridlines()
-          			 )
+      				.call(xgrid)
 
   				// add the Y gridlines
- 				d3.select($element[0]).select(".plot").append("g")			
+ 				var Y_gridlines=d3.select($element[0]).select(".plot").append("g")			
      				.attr("class", "grid")
-      				.call(make_y_gridlines()
-          			)
+      				.call(ygrid)
 				}		
-						
+				
+				
+				
+				
+				
+				
 				if(layout.numformatx=="money")
 				{
 				var d3loc_x={
@@ -706,13 +574,13 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				
 				d3.formatDefaultLocale(d3loc_x);
 				
-				var formatx="$,"+layout.decimalprecisionx;
-				//console.log(formatx);
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(formatx)));				
+				var XA=d3.axisBottom(x).ticks(5).tickFormat(d3.format(formatx));
+				var xaxis=d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(XA);				
 				}				
 				else
 				{
-				d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(d3.axisBottom(x).ticks(5).tickFormat(d3.format(layout.decimalprecisionx)));
+				var XA=d3.axisBottom(x).ticks(5).tickFormat(d3.format(layout.decimalprecisionx));
+				var xaxis=d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(XA);
 				}
 		
 		
@@ -727,60 +595,58 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				
 				d3.formatDefaultLocale(d3loc_y);
 				
-				var formaty="$,"+layout.decimalprecisiony;
-				console.log(formaty);				
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(formaty)));
+				var YA=d3.axisLeft(y).ticks(5).tickFormat(d3.format(formaty));
+				var yaxis=d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(YA);
 				}				
 				else
 				{				
-				d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(d3.axisLeft(y).ticks(5).tickFormat(d3.format(layout.decimalprecisiony)));
+				var YA=d3.axisLeft(y).ticks(5).tickFormat(d3.format(layout.decimalprecisiony));
+				var yaxis=d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(YA);
 				}
 				
-				
-				var xdis_xlab=$element.width()/2;
-				var ydis_xlab=$element.height()*(0.95);
-				
-				var xdis_ylab=layout.margin.left*(1/4);
-				var ydis_ylab=$element.height()/2;
 				
 				
 				if(layout.xaxistitle!="")
 				{
 				// x label 
-				d3.select($element[0]).select(".x-label").append("text").attr("transform","translate("+xdis_xlab+","+ydis_xlab+")").style("text-anchor", "middle").text(layout.xaxistitle);		
+				var x_label=d3.select($element[0]).select(".x-label").append("text").attr("transform","translate("+xdis_xlab+","+ydis_xlab+")").style("text-anchor", "middle").text(layout.xaxistitle);		
 				}
 				else
 				{
 				// x label 
-				d3.select($element[0]).select(".x-label").append("text").attr("transform","translate("+xdis_xlab+","+ydis_xlab+")").style("text-anchor", "middle").text(this.backendApi.getMeasureInfos()[0].qFallbackTitle);		
+				var x_label=d3.select($element[0]).select(".x-label").append("text").attr("transform","translate("+xdis_xlab+","+ydis_xlab+")").style("text-anchor", "middle").text(this.backendApi.getMeasureInfos()[0].qFallbackTitle);		
 				} 
 				
 				
 				if(layout.yaxistitle!="")
 				{
 				// y label	
-				d3.select($element[0]).select(".y-label").append("text").attr( "transform","translate("+xdis_ylab+","+ydis_ylab+") rotate(-90)").style("text-anchor", "middle").text(layout.yaxistitle);
+				var y_label=d3.select($element[0]).select(".y-label").append("text").attr( "transform","translate("+xdis_ylab+","+ydis_ylab+") rotate(-90)").style("text-anchor", "middle").text(layout.yaxistitle);
 				}
 				else
 				{
 				// y label
-				d3.select($element[0]).select(".y-label").append("text").attr( "transform","translate("+xdis_ylab+","+ydis_ylab+") rotate(-90)").style("text-anchor", "middle").text(this.backendApi.getMeasureInfos()[1].qFallbackTitle);
+				var y_label=d3.select($element[0]).select(".y-label").append("text").attr( "transform","translate("+xdis_ylab+","+ydis_ylab+") rotate(-90)").style("text-anchor", "middle").text(this.backendApi.getMeasureInfos()[1].qFallbackTitle);
 				}
-			
-			  // Add the tooltip container to the vis container
+				
+				
+
+
+
+				// Add the tooltip container to the vis container
               // it's invisible and its position/contents are defined during mouseover
               var tooltip = d3.select($element[0]).append("div").attr("class", "tooltip").style("opacity",0.5);
 			
               // tooltip mouseover event handler
-              var tipMouseover = function(d) {
+              tipMouseover = function(d) {
               	  
                   var color = "white";
 				  var state=d[0].qText;
 				  var xval=d[2].qText;
 				  var yval=d[3].qText;
 				
-				  var tooltipx=layout.xaxistitle;
-				  var tooltipy=layout.yaxistitle;
+				  //var tooltipx=layout.xaxistitle;
+				  //var tooltipy=layout.yaxistitle;
 				  
 				  if(layout.xaxistitle=="")
 				  {
@@ -805,53 +671,42 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
               };
 			  
               // tooltip mouseout event handler
-              var tipMouseout = function(d) {
+              tipMouseout = function(d) {
                   tooltip.transition()
                       .duration(300) // ms
                       .style("opacity", 0); // don't care about position!
               };
+
+              	
+              	var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(measure_array);
+
+	          	function measurearr(measure_array)
+	          	{
+	          	dots=d3.select($element[0]).select(".plot").selectAll(".dot").data(measure_array);
+				}
+
+
+				//enter	
+				var circles=dots.enter().append("circle")
+					.attr("class", "dot")
+					.attr("r",radius)
+					.attr("stroke",function(d){ return d[colorDimIndex].qText} )
+				 	.attr("fill",function(d){return d[colorDimIndex].qText})
+					.attr("cx", function(d) { return x(d[2].qNum);})
+					.attr("cy", function(d) { return y(d[3].qNum);})
+					.on("mouseover", tipMouseover)
+                	.on("mouseout", tipMouseout);
+							
 				
-	
-			 
-              var that = this
-			  var evaluateColorCode = function(d){
-			  	console.log(that.$scope.colorCode)
-			  	try{
-			  		
-			  	}catch(ex){console.log(ex)}
-			  	
-			  	var o = Math.round, r = Math.random, s = 255;
-    			return 'rgb(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ')';
-			  }
-			
-				
-				
+
+
+				/*
 				/////// DOTS //////	
 				
 				var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(measure_array);
 				
-				////////console.log(layout.bubbleradius);
 				
-				if(layout.bubbleradius!="")
-				{
-				//enter				
-    			setTimeout(() => {
-              		 dots.enter().append("circle")
-					.attr("class", "dot")
-					.attr("r",layout.bubbleradius)
-					.attr("stroke",function(d){ return d[colorDimIndex].qText} )
-				 	.attr("fill",function(d){return d[colorDimIndex].qText})
-					.attr("cx", function(d) { return x(d[2].qNum);})
-					.attr("cy", function(d) { return y(d[3].qNum);})
-					.on("mouseover", tipMouseover)
-                	.on("mouseout", tipMouseout);
-
-              	}, 0)
-
-				//exit
-				dots.exit().remove();
-				
-				//update 
+				//enter	
 				setTimeout(() => {
               		 dots.enter().append("circle")
 					.attr("class", "dot")
@@ -864,60 +719,8 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
                 	.on("mouseout", tipMouseout);
 
               	}, 0)
-				
-				}
-				else
-				{
-				//enter				
-    			setTimeout(() => {
-              		 dots.enter().append("circle")
-					.attr("class", "dot")
-					.attr("r",3.5)
-					.attr("stroke",function(d){ return d[colorDimIndex].qText} )
-				 	.attr("fill",function(d){return d[colorDimIndex].qText})
-					.attr("cx", function(d) { return x(d[2].qNum);})
-					.attr("cy", function(d) { return y(d[3].qNum);})
-					.on("mouseover", tipMouseover)
-                	.on("mouseout", tipMouseout);
-
-              	}, 0)
-
-				//exit
-				dots.exit().remove();
-				
-				//update 
-				setTimeout(() => {
-              		 dots.enter().append("circle")
-					.attr("class", "dot")
-					.attr("r",3.5)
-					.attr("stroke",function(d){ return d[colorDimIndex].qText} )
-				 	.attr("fill",function(d){return d[colorDimIndex].qText})
-					.attr("cx", function(d) { return x(d[2].qNum);})
-					.attr("cy", function(d) { return y(d[3].qNum);})
-					.on("mouseover", tipMouseover)
-                	.on("mouseout", tipMouseout);
-
-              	}, 0)
-				
-				}
-				
 								
 				
-				/*
-				//enter				
-    			setTimeout(() => {
-              		 dots.enter().append("circle")
-					.attr("class", "dot")
-					.attr("r",3.5)
-					.attr("stroke",function(d){ return d[colorDimIndex].qText} )
-				 	.attr("fill",function(d){return d[colorDimIndex].qText})
-					.attr("cx", function(d) { return x(d[2].qNum);})
-					.attr("cy", function(d) { return y(d[3].qNum);})
-					.on("mouseover", tipMouseover)
-                	.on("mouseout", tipMouseout);
-
-              	}, 0)
-
 				//exit
 				dots.exit().remove();
 				
@@ -925,7 +728,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				setTimeout(() => {
               		 dots.enter().append("circle")
 					.attr("class", "dot")
-					.attr("r",3.5)
+					.attr("r",layout.bubbleradius)
 					.attr("stroke",function(d){ return d[colorDimIndex].qText} )
 				 	.attr("fill",function(d){return d[colorDimIndex].qText})
 					.attr("cx", function(d) { return x(d[2].qNum);})
@@ -935,57 +738,18 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 
               	}, 0)
 				*/
-				
-				
-				
-				
-				
-				/*
-				//// REGRESSION LINE ////
-				var regressionLine = d3.select($element[0]).select(".plot").selectAll(".regression").data([regressionPoints]);
-				
-				if(layout.regression.type=="equilibriumline")
-				{
-				//enter
-				var lineGenerator = d3.line().curve(d3.curveCardinal);
-				var array_reg=[];
-				
-				regressionPoints.forEach(function(element){array_reg.push([element[0],element[1]])});
-								
-				var pathData = lineGenerator(array_reg);
-				
-				regressionLine.enter().append("path")
-					.attr("class", "regression")
-					.attr("stroke", "black")
-					.attr("stroke-width", "1px")
-					.attr("d",d3.line().curve(d3.curveCardinal)(array_reg));
-				
-				//exit
-				regressionLine.exit().remove();
-				
-				//update
-				regressionLine
-					.attr("stroke", "black")
-					.attr("d",d3.line().curve(d3.curveCardinal)(array_reg));
-					
-				//needed for export
-				return qlik.Promise.resolve();
-				}
-				else
-				*/
-				
-				
-				//// REGRESSION LINE ////
 			
+				/*
+				//// REGRESSION LINE ////
 				var regressionLine = d3.select($element[0]).select(".plot").selectAll(".regression").data([regressionPoints]);
 				
 				//enter
-				regressionLine.enter().append("path")
+				var regline=regressionLine.enter().append("path")
 					.attr("class", "regression")
 					.attr("stroke", "black")
 					.attr("stroke-width", "1px")
-					.attr("d", d3.line().curve(d3.curveCardinal).x(function(d){return x(d[0]); }).y(function(d){ return y(d[1]); }));
-												
+					.attr("d", d3.line().curve(d3.curveCardinal).x(function(d){return x(d[0]); }).y(function(d){ return y(d[1]);}));
+				
 				//exit
 				regressionLine.exit().remove();
 				
@@ -994,11 +758,187 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					.attr("stroke", "black")
 					.attr("d", d3.line().curve(d3.curveCardinal).x(function(d){ return x(d[0]); }).y(function(d){ return y(d[1]); }));
 				
+				*/
+				
+				function zoomed() {
+				
+				var new_xScale = d3.event.transform.rescaleX(x);
+  				var new_yScale = d3.event.transform.rescaleY(y);
+				
+				xaxis.call(XA.scale(new_xScale));
+				yaxis.call(YA.scale(new_yScale));
+				
+				X_gridlines.call(xgrid.scale(new_xScale));
+				Y_gridlines.call(ygrid.scale(new_yScale));
+				
+				var xMin = new_xScale.domain()[0];
+				console.log(xMin);
+				var xMax = new_xScale.domain()[1];
+				console.log(xMax);
+				var yMin = new_yScale.domain()[0];
+				console.log(yMin);
+				var yMax = new_yScale.domain()[1];
+				console.log(yMax);
+				
+
+				var arr=layout.qHyperCube.qDataPages[0].qMatrix;
+				measure_array=[];
+
+
+				arr.forEach(function(element) {
+  							if(checkNull(element[0].qText) || checkNull(element[1].qText) || checkNull(element[2].qNum) || checkNull(element[3].qNum))
+							{}
+							else if(element[2].qNum<xMin)
+							{}
+							else if(element[2].qNum>xMax)
+							{}
+							else if(element[3].qNum<yMin)
+							{}
+							else if(element[3].qNum>yMax)
+							{}
+							else
+							{measure_array.push(element)}
+							});
+
+
+				console.log(measure_array);
+				measurearr(measure_array);
+
+				circles.attr("cx", function(d) { return new_xScale(d[2].qNum);});
+				circles.attr("cy", function(d) { return new_yScale(d[3].qNum);});
+				
+				/*
+				regressionPoints=[];
+				
+				if(layout.regression.type=="none")
+				{
+					regressionPoints = [];
+				}
+				else if(layout.regression.type == "equilibriumline")
+				{
+					var generateRegressionPoints = function() {
+					var arr = [[0,0],[1000,1000]];
+					
+					return arr;
+					};									
+					regressionPoints = generateRegressionPoints();					
+				}
+				else
+				{
+					var generateRegressionPoints = function() {
+					var arr = [];
+					
+					var data = measure_array.map(function(row){
+						return [row[2].qNum,row[3].qNum]
+					});
+					console.log(data);
+					var regression_predict = regression(layout.regression.type,measure_array.map(function(row){
+						return [row[2].qNum,row[3].qNum]}), layout.regression.order);
+					
+					var min = data.reduce(function(min, val) { 
+						return val[0] < min ? val[0] : min; 
+					}, data[0][0]);
+					var max = data.reduce(function(max, val) { 
+						return val[0] > max ? val[0] : max; 
+					}, data[0][0]);
+					
+					var extent = max - min;
+																								
+					for(var i = 0; i < 1000; i++) {
+						var x = 0 + (extent/1000)*i;
+						arr.push(regression_predict.predict(x));
+					}
+					return arr;
+					};
+					regressionPoints = generateRegressionPoints();					
+				}
+				
+				console.log(regressionPoints);
+				
+				////regpoints();
+				
+				regline.attr("d", d3.line().curve(d3.curveCardinal).x(function(d){ return new_xScale(d[0]); }).y(function(d){ return new_yScale(d[1]);}));
+				
+				*/
+				
+				
+				
+				
+  				}
+				
+				
+				
+				
 				//needed for export
 				return qlik.Promise.resolve();
 				
-
 			}
 
 		};
 	});
+
+
+
+
+
+	
+	
+			
+
+
+			/*
+				
+				function dataRegPoints()
+				{
+				
+				var regressionPoints = [];
+				
+				if(layout.regression.type=="none")
+				{
+					regressionPoints = [];
+				}
+				else if(layout.regression.type == "equilibriumline")
+				{
+					var generateRegressionPoints = function() {
+					var arr = [[0,0],[1000,1000]];
+					return arr;
+					};									
+					regressionPoints = generateRegressionPoints();					
+				}
+				else
+				{
+					var generateRegressionPoints = function() {
+					var arr = [];
+					
+					var data = measure_array.map(function(row){
+						return [row[2].qNum,row[3].qNum]
+					});
+					
+					var regression_predict = regression(layout.regression.type,measure_array.map(function(row){
+						return [row[2].qNum,row[3].qNum]}), layout.regression.order);
+					
+					var min = data.reduce(function(min, val) { 
+						return val[0] < min ? val[0] : min; 
+					}, data[0][0]);
+					var max = data.reduce(function(max, val) { 
+						return val[0] > max ? val[0] : max; 
+					}, data[0][0]);
+					
+					var extent = max - min;
+															
+					for(var i = 0; i < 1000; i++) {
+						
+						var x = 0 + (extent/1000)*i;
+						arr.push(regression_predict.predict(x));
+					}
+					return arr;
+					};
+					regressionPoints = generateRegressionPoints();					
+				}
+				
+				return regressionPoints;
+				}
+							
+				console.log(dataRegPoints());
+				*/
+
