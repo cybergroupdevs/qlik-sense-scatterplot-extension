@@ -387,7 +387,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				return value=="NaN";
 				}	
 
-				/*
+
 				function dataArray()
 				{
 			   	var arr=layout.qHyperCube.qDataPages[0].qMatrix;
@@ -405,22 +405,10 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				}
 				
 				console.log(dataArray());
-				*/
 				
-				var arr=layout.qHyperCube.qDataPages[0].qMatrix;
 				
-				var measure_array=new Array();
 				
-				arr.forEach(function(element) {
-  							if(checkNull(element[0].qText) || checkNull(element[1].qText) || checkNull(element[2].qNum) || checkNull(element[3].qNum))
-							{}
-							else
-							{measure_array.push(element)}
-							});
-							
-							
-
-
+				
 				function make_x_gridlines()
 				{
 				return d3.axisBottom(x).scale(x).ticks(5);
@@ -433,7 +421,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				
 
 
-				/*
+
 				function dotsplot(dataarr,radius,colorDimIndex,xscale,yscale,tipMouseover,tipMouseout)
 				{
 				var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(dataarr);
@@ -454,14 +442,14 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				dots.exit().remove();
 				
 				}
-				*/
+
 
 
 				var colorDimIndex = 0;
 				var width = $element.width() - layout.margin.left - layout.margin.right;
 				var height = $element.height() - layout.margin.top - layout.margin.bottom;
-				var x = d3.scaleLinear().domain([0, d3.max(measure_array, function(d) { return d[2].qNum; })]).range([0, width]).nice();
-				var y = d3.scaleLinear().domain([0, d3.max(measure_array, function(d) { return d[3].qNum; })]).range([height,0]).nice();
+				var x = d3.scaleLinear().domain([0, d3.max(dataArray(), function(d) { return d[2].qNum; })]).range([0, width]).nice();
+				var y = d3.scaleLinear().domain([0, d3.max(dataArray(), function(d) { return d[3].qNum; })]).range([height,0]).nice();
 				var xdis_xlab=$element.width()/2;
 				var ydis_xlab=$element.height()*(0.95);
 				/////var xdis_ylab=layout.margin.left*(1/4);
@@ -495,27 +483,13 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				  .append("<svg><g class='plot'><g class='x-axis'></g><g class='y-axis'></g></g><g class='x-label'></g><g class='y-label'></g></svg>");
 				
 				
+				
 				//var colorDimIndex = 0;
 				layout.qHyperCube.qDimensionInfo.forEach(function(o,i){
 					if (o.IsColorDimension){
 						colorDimIndex = i;
 					}
-				});
-				
-				
-				/*
-			 
-              var that = this
-			  var evaluateColorCode = function(d){
-			  	console.log(that.$scope.colorCode)
-			  	try{
-			  		
-			  	}catch(ex){console.log(ex)}
-			  	
-			  	var o = Math.round, r = Math.random, s = 255;
-    			return 'rgb(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ')';
-			  }
-			*/
+				});		
 				
 				var svg=d3.select($element[0]).select("svg").attr("width", $element.width()).attr("height", $element.height());
 				var zoom=d3.zoom().on("zoom",zoomed);
@@ -677,29 +651,11 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
                       .style("opacity", 0); // don't care about position!
               };
 
-              	
-              	var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(measure_array);
+              	dotsplot(dataArray(),radius,colorDimIndex,x,y,tipMouseover,tipMouseout);
+	          	
 
-	          	function measurearr(measure_array)
-	          	{
-	          	dots=d3.select($element[0]).select(".plot").selectAll(".dot").data(measure_array);
-				}
-
-
-				//enter	
-				var circles=dots.enter().append("circle")
-					.attr("class", "dot")
-					.attr("r",radius)
-					.attr("stroke",function(d){ return d[colorDimIndex].qText} )
-				 	.attr("fill",function(d){return d[colorDimIndex].qText})
-					.attr("cx", function(d) { return x(d[2].qNum);})
-					.attr("cy", function(d) { return y(d[3].qNum);})
-					.on("mouseover", tipMouseover)
-                	.on("mouseout", tipMouseout);
-							
 				
-
-
+				
 				/*
 				/////// DOTS //////	
 				
@@ -780,11 +736,32 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				var yMax = new_yScale.domain()[1];
 				console.log(yMax);
 				
-
 				var arr=layout.qHyperCube.qDataPages[0].qMatrix;
+				var measure_array_zoom=new Array();
+
+				arr.forEach(function(element) {
+  							if(checkNull(element[0].qText) || checkNull(element[1].qText) || checkNull(element[2].qNum) || checkNull(element[3].qNum))
+							{}
+							else if(element[2].qNum<xMin)
+							{}
+							else if(element[2].qNum>xMax)
+							{}
+							else if(element[3].qNum<yMin)
+							{}
+							else if(element[3].qNum>yMax)
+							{}
+							else
+							{measure_array_zoom.push(element)}
+							});
+
+
+				console.log(measure_array_zoom);
+
+				////dotsplot(measure_array_zoom,radius,colorDimIndex,new_xScale,new_yScale,tipMouseover,tipMouseout);
+
+				/*
 				measure_array=[];
-
-
+								
 				arr.forEach(function(element) {
   							if(checkNull(element[0].qText) || checkNull(element[1].qText) || checkNull(element[2].qNum) || checkNull(element[3].qNum))
 							{}
@@ -799,15 +776,13 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 							else
 							{measure_array.push(element)}
 							});
-
-
-				console.log(measure_array);
-				measurearr(measure_array);
-
+																
+				/////measurearr();
+				
 				circles.attr("cx", function(d) { return new_xScale(d[2].qNum);});
 				circles.attr("cy", function(d) { return new_yScale(d[3].qNum);});
 				
-				/*
+				
 				regressionPoints=[];
 				
 				if(layout.regression.type=="none")
@@ -883,6 +858,19 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 
 	
 	
+				/*
+			 
+              var that = this
+			  var evaluateColorCode = function(d){
+			  	console.log(that.$scope.colorCode)
+			  	try{
+			  		
+			  	}catch(ex){console.log(ex)}
+			  	
+			  	var o = Math.round, r = Math.random, s = 255;
+    			return 'rgb(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ')';
+			  }
+			*/
 			
 
 
