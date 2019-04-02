@@ -630,6 +630,162 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				}
 				
 				
+
+
+				var regressionPoints=[];
+				
+				if(layout.regression.type=="none")
+				{
+					regressionPoints = [];
+				}
+				else if(layout.regression.type == "equilibriumline")
+				{
+					var generateRegressionPoints = function() {
+					var arr = [[0,0],[1000,1000]];
+					
+					return arr;
+					};									
+					regressionPoints = generateRegressionPoints();					
+				}
+				else
+				{
+					var generateRegressionPoints = function() {
+					var arr = [];
+					
+					var data = measure_array.map(function(row){
+						return [row[2].qNum,row[3].qNum]
+					});
+					console.log(data);
+					var regression_predict = regression(layout.regression.type,measure_array.map(function(row){
+						return [row[2].qNum,row[3].qNum]}), layout.regression.order);
+					
+					var min = data.reduce(function(min, val) { 
+						return val[0] < min ? val[0] : min; 
+					}, data[0][0]);
+					var max = data.reduce(function(max, val) { 
+						return val[0] > max ? val[0] : max; 
+					}, data[0][0]);
+					
+					var extent = max - min;
+																								
+					for(var i = 0; i < 1000; i++) {
+						var x = 0 + (extent/1000)*i;
+						arr.push(regression_predict.predict(x));
+					}
+					return arr;
+					};
+					regressionPoints = generateRegressionPoints();					
+				}
+				
+				//console.log(regressionPoints);
+				
+
+				//// REGRESSION LINE ////
+				var regressionLine = d3.select($element[0]).select(".plot").selectAll(".regression").data([regressionPoints]);
+				
+				//enter
+				regressionLine.enter().append("path")
+					.attr("class", "regression")
+					.attr("stroke", "black")
+					.attr("stroke-width", "1px")
+					.attr("d", d3.line().curve(d3.curveCardinal).x(function(d){return x(d[0]); }).y(function(d){ return y(d[1]);}));
+				/*
+				//exit
+				regressionLine.exit().remove();
+				
+				//update
+				regressionLine
+					.attr("stroke", "black")
+					.attr("d", d3.line().curve(d3.curveCardinal).x(function(d){ return x(d[0]); }).y(function(d){ return y(d[1]); }));
+				*/
+
+
+
+				
+				function dataRegPoints(measure_array_zoom,xMin,xMax,yMin,yMax)
+				{
+				var regressionPoints=[];
+				
+				if(layout.regression.type=="none")
+				{
+					regressionPoints = [];
+				}
+				else if(layout.regression.type == "equilibriumline")
+				{
+					var generateRegressionPoints = function() {
+					var arr = [[0,0],[1000,1000]];
+					
+					return arr;
+					};									
+					regressionPoints = generateRegressionPoints();					
+				}
+				else
+				{
+
+					var generateRegressionPoints = function() {
+					var arr = [];
+					
+					var data = measure_array_zoom.map(function(row){
+						return [row[2].qNum,row[3].qNum]
+					});
+					console.log(data);
+					var regression_predict = regression(layout.regression.type,measure_array_zoom.map(function(row){
+						return [row[2].qNum,row[3].qNum]}), layout.regression.order);
+					/*
+					var min = data.reduce(function(min, val) { 
+						return val[0] < min ? val[0] : min; 
+					}, data[0][0]);
+					var max = data.reduce(function(max, val) { 
+						return val[0] > max ? val[0] : max; 
+					}, data[0][0]);
+					
+					var extent = max - min;
+																					
+					for(var i = -500; i < 500; i++) {
+						//var x = 0 + (extent/10000)*i;
+						//var x = 0 + i;
+						var x = 0 + i;
+						arr.push(regression_predict.predict(x));
+					}
+					*/
+
+					var extent = xMax - xMin;
+
+
+					
+					for(var i = 0; i < 1000; i++) {
+						var x = xMin + (extent/1000)*i;
+						arr.push(regression_predict.predict(x));
+					}
+					//console.log(arr);
+					//console.log(yMin);
+					//console.log(yMax);
+					
+					var arr_reg=[];
+					arr.forEach(function(element){
+						
+						if(element[1]<yMin || element[1]>yMax)
+						{}
+						else 
+						{arr_reg.push(element)}
+					});
+					
+					console.log(arr_reg);
+					return arr_reg;
+					
+					};
+					regressionPoints = generateRegressionPoints();					
+				}
+				
+				
+
+				regressionLine = d3.select($element[0]).select(".plot").selectAll(".regression").data([regressionPoints]);
+				}
+				
+			
+
+
+
 				function zoomed() {
 				
 				var new_xScale = d3.event.transform.rescaleX(x);
@@ -674,54 +830,23 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				//var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(measure_array_zoom);
 		 		dotsplot(measure_array_zoom);
 				
-				//	dots.exit().remove();
+  				svg.selectAll(".dot").attr("cx", function(d) { return new_xScale(d[2].qNum);})
+									 .attr("cy", function(d) { return new_yScale(d[3].qNum);});
 
-				dots
-					.attr("cx", function(d) { return new_xScale(d[2].qNum);})
-					.attr("cy", function(d) { return new_yScale(d[3].qNum);})
-									
-				/*
 
-				//enter	
-				
-              		 dots.enter().append("circle")
-					.attr("class", "dot")
-					.attr("r",radius)
-					.attr("stroke",function(d){ return d[colorDimIndex].qText} )
-				 	.attr("fill",function(d){return d[colorDimIndex].qText})
-					.attr("cx", function(d) { return new_xScale(d[2].qNum);})
-					.attr("cy", function(d) { return new_yScale(d[3].qNum);})
-					.on("mouseover", tipMouseover)
-                	.on("mouseout", tipMouseout);
-							
-				//exit
-				dots.exit().remove();
-				*/
 
-				//dotsplot(measure_array_zoom,radius,colorDimIndex,new_xScale,new_yScale,tipMouseover,tipMouseout);
+				dataRegPoints(measure_array_zoom,xMin,xMax,yMin,yMax);
+
+				regressionLine.attr("d", d3.line().curve(d3.curveCardinal).x(function(d){return new_xScale(d[0]); }).y(function(d){ return new_yScale(d[1]);}));
+
 				}
 				
 				
 				//needed for export
 				return qlik.Promise.resolve();
 				
-			}//,
-			
-			/*	
-			resize:function($element, layout)
-			{
-				function zoomed() {
-				
-				var new_xScale = d3.event.transform.rescaleX(x);
-  				var new_yScale = d3.event.transform.rescaleY(y);
-				
-				xaxis.call(XA.scale(new_xScale));
-				yaxis.call(YA.scale(new_yScale));
-				
-				X_gridlines.call(xgrid.scale(new_xScale));
-				Y_gridlines.call(ygrid.scale(new_yScale));
-				}
 			}
-			*/
+			
+		
 		};
 	});
