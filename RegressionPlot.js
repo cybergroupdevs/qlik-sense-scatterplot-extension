@@ -486,8 +486,8 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				//var y = d3.scaleLinear().domain([0, d3.max(measure_array, function(d) { return d[3].qNum; })]).range([height,0]).nice();
 				var xdis_xlab=$element.width()/2;
 				var ydis_xlab=$element.height()*(0.95);
-				/////var xdis_ylab=layout.margin.left*(1/4);
-				var xdis_ylab=layout.margin.left*(-0.75);
+				var xdis_ylab=layout.margin.left*(1/4);
+				//var xdis_ylab=layout.margin.left*(-0.75);
 				var ydis_ylab=$element.height()/2;
 				var formatx="$,"+layout.decimalprecisionx;
 				var formaty="$,"+layout.decimalprecisiony;
@@ -677,7 +677,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
               	};
 
               
-              	console.log(measure_array);
+
 				var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(measure_array);
 				//enter	
               	dots.enter().append("circle")
