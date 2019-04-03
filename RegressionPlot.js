@@ -609,11 +609,11 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 
 
 				// Add the tooltip container to the vis container
-              // it's invisible and its position/contents are defined during mouseover
-              var tooltip = d3.select($element[0]).append("div").attr("class", "tooltip").style("opacity",0.5);
+                // it's invisible and its position/contents are defined during mouseover
+                var tooltip = d3.select($element[0]).append("div").attr("class", "tooltip").style("opacity",0.5);
 			
-              // tooltip mouseover event handler
-              tipMouseover = function(d) {
+                // tooltip mouseover event handler
+                tipMouseover = function(d) {
               	  
                   var color = "white";
 				  var state=d[0].qText;
@@ -643,22 +643,19 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
                       .duration(200) // ms
                       .style("opacity", .9)  
 
-              };
+              	};
 			  
-              // tooltip mouseout event handler
-              tipMouseout = function(d) {
+              	// tooltip mouseout event handler
+              	tipMouseout = function(d) {
                   tooltip.transition()
                       .duration(300) // ms
                       .style("opacity", 0); // don't care about position!
-              };
+              	};
 
               
-		var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(measure_array);
-				
-				
+				var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(measure_array);
 				//enter	
-				
-              		 dots.enter().append("circle")
+              	dots.enter().append("circle")
 					.attr("class", "dot")
 					.attr("r",radius)
 					.attr("stroke",function(d){ return d[colorDimIndex].qText} )
@@ -670,16 +667,36 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 							
 				//exit
 				//dots.exit().remove();
-				
+
+
+
+
+
 				
 				function dotsplot(measure_array_zoom)
 				{
+				dots.exit().remove();
 				dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(measure_array_zoom);
-				console.log(dots);
+				dots.enter().append("circle")
+					.attr("class", "dot")
+					.attr("r",radius)
+					.attr("stroke",function(d){ return d[colorDimIndex].qText} )
+				 	.attr("fill",function(d){return d[colorDimIndex].qText})
+					.attr("cx", function(d) { return x(d[2].qNum);})
+					.attr("cy", function(d) { return y(d[3].qNum);})
+					.on("mouseover", tipMouseover)
+                	.on("mouseout", tipMouseout);
+							
 				}
 				
-				
 
+
+
+				var min_x = x.domain()[0];
+				var max_x = x.domain()[1];
+				var min_y = y.domain()[0];
+				var max_y = y.domain()[1];
+				
 
 				var regressionPoints=[];
 				
@@ -704,7 +721,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					var data = measure_array.map(function(row){
 						return [row[2].qNum,row[3].qNum]
 					});
-					console.log(data);
+					
 					var regression_predict = regression(layout.regression.type,measure_array.map(function(row){
 						return [row[2].qNum,row[3].qNum]}), layout.regression.order);
 					/*
@@ -717,9 +734,8 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					*/
 					//var extent = max - min;
 					
-					var min=0;
-
-					var max=d3.max(measure_array, function(d) { return d[2].qNum; });
+					var min=min_x;
+					var max=max_x;
 
 				if(layout.xaxislimitmin!="" & layout.xaxislimitmax!="")
 				{
@@ -738,13 +754,8 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				var extent = max - min;
 				}
 
-
-
-
-					//var extent=x_d2-x_d1;
-
-					for(var i = 0; i < 1000; i++) {
-						if(layout.xaxislimitmin!="" & layout.xaxislimitmax!="")
+				for(var i = 0; i < 1000; i++) {
+					if(layout.xaxislimitmin!="" & layout.xaxislimitmax!="")
 						{
 						var x = x_d1 + (extent/1000)*i;
 						}
@@ -759,24 +770,22 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 						arr.push(regression_predict.predict(x));
 					}
 
-					var arr_reg=[];
-					arr.forEach(function(element){
-						
-						if(element[1]<x_d3 || element[1]>x_d4)
-						{}
-						else 
-						{arr_reg.push(element)}
-					});
 					
-					return arr_reg;
-					//return arr;
-					};
-					regressionPoints = generateRegressionPoints();					
+				var arr_reg=[];
+				arr.forEach(function(element){
+					if(element[1]<min_y || element[1]>max_y)
+					{}
+					else 
+					{arr_reg.push(element)}
+				});
+
+				return arr_reg;
+				//return arr;
+				};
+				regressionPoints = generateRegressionPoints();					
 				}
 				
-				//console.log(regressionPoints);
 				
-
 				//// REGRESSION LINE ////
 				var regressionLine = d3.select($element[0]).select(".plot").selectAll(".regression").data([regressionPoints]);
 				
@@ -825,7 +834,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					var data = measure_array_zoom.map(function(row){
 						return [row[2].qNum,row[3].qNum]
 					});
-					console.log(data);
+					
 					var regression_predict = regression(layout.regression.type,measure_array_zoom.map(function(row){
 						return [row[2].qNum,row[3].qNum]}), layout.regression.order);
 					/*
@@ -847,16 +856,11 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					*/
 
 					var extent = xMax - xMin;
-
-
 					
 					for(var i = 0; i < 1000; i++) {
 						var x = xMin + (extent/1000)*i;
 						arr.push(regression_predict.predict(x));
 					}
-					//console.log(arr);
-					//console.log(yMin);
-					//console.log(yMax);
 					
 					var arr_reg=[];
 					arr.forEach(function(element){
@@ -873,9 +877,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 					};
 					regressionPoints = generateRegressionPoints();					
 				}
-				
-				
-
+			
 				regressionLine = d3.select($element[0]).select(".plot").selectAll(".regression").data([regressionPoints]);
 				}
 				
@@ -895,17 +897,24 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				Y_gridlines.call(ygrid.scale(new_yScale));
 				
 				var xMin = new_xScale.domain()[0];
-				console.log(xMin);
 				var xMax = new_xScale.domain()[1];
-				console.log(xMax);
 				var yMin = new_yScale.domain()[0];
-				console.log(yMin);
 				var yMax = new_yScale.domain()[1];
-				console.log(yMax);
-				
+								
 				var arr=layout.qHyperCube.qDataPages[0].qMatrix;
 				var measure_array_zoom=new Array();
 
+
+				arr.forEach(function(element) {
+  							if(checkNull(element[0].qText) || checkNull(element[1].qText) || checkNull(element[2].qNum) || checkNull(element[3].qNum))
+							{}
+							else if(element[2].qNum<xMin || element[2].qNum>xMax || element[3].qNum<yMin || element[3].qNum>yMax)
+							{}
+							else
+							{measure_array_zoom.push(element)}
+							});
+
+				/*
 				arr.forEach(function(element) {
   							if(checkNull(element[0].qText) || checkNull(element[1].qText) || checkNull(element[2].qNum) || checkNull(element[3].qNum))
 							{}
@@ -920,20 +929,12 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 							else
 							{measure_array_zoom.push(element)}
 							});
+				*/
 
-
-				console.log(measure_array_zoom);
-
-				//var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(measure_array_zoom);
-		 		dotsplot(measure_array_zoom);
-				
-  				svg.selectAll(".dot").attr("cx", function(d) { return new_xScale(d[2].qNum);})
-									 .attr("cy", function(d) { return new_yScale(d[3].qNum);});
-
-
+				dotsplot(measure_array_zoom);
+				svg.selectAll(".dot").attr("cx", function(d) { return new_xScale(d[2].qNum);}).attr("cy", function(d) { return new_yScale(d[3].qNum);});
 
 				dataRegPoints(measure_array_zoom,xMin,xMax,yMin,yMax);
-
 				regressionLine.attr("d", d3.line().curve(d3.curveCardinal).x(function(d){return new_xScale(d[0]); }).y(function(d){ return new_yScale(d[1]);}));
 
 				}
