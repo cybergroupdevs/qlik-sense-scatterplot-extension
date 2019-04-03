@@ -677,6 +677,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
               	};
 
               
+              	console.log(measure_array);
 				var dots = d3.select($element[0]).select(".plot").selectAll(".dot").data(measure_array);
 				//enter	
               	dots.enter().append("circle")
@@ -691,9 +692,6 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 							
 				//exit
 				//dots.exit().remove();
-
-
-
 
 
 
@@ -720,12 +718,40 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				{
 					regressionPoints = [];
 				}
+				/*
 				else if(layout.regression.type == "equilibriumline")
 				{
 					var generateRegressionPoints = function() {
 					var arr = [[0,0],[1000,1000]];
 					
 					return arr;
+					};									
+					regressionPoints = generateRegressionPoints();					
+				}
+				*/
+				else if(layout.regression.type == "equilibriumline")
+				{
+					var generateRegressionPoints = function() {
+
+
+					var arr = [];
+
+					for(var i=0;i<1000;i++)
+					{
+					arr.push([i,i]);
+					}
+					var arr_reg=[];
+					arr.forEach(function(element){
+						//if(element[0]<x_d1 || element[0]>x_d2 || element[1]<x_d3 || element[1]>x_d4)
+						if(element[0]<min_x || element[0]>max_x || element[1]<min_y || element[1]>max_y)
+						{}
+						else
+						{arr_reg.push(element)}
+
+					})
+					return arr_reg;
+
+					//return arr;
 					};									
 					regressionPoints = generateRegressionPoints();					
 				}
@@ -832,12 +858,39 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				{
 					regressionPoints = [];
 				}
+				/*
 				else if(layout.regression.type == "equilibriumline")
 				{
 					var generateRegressionPoints = function() {
 					var arr = [[0,0],[1000,1000]];
 					
 					return arr;
+					};									
+					regressionPoints = generateRegressionPoints();					
+				}
+				*/
+				else if(layout.regression.type == "equilibriumline")
+				{
+					var generateRegressionPoints = function() {
+
+
+					var arr = [];
+
+					for(var i=-1000;i<1000;i++)
+					{
+					arr.push([i,i]);
+					}
+					var arr_reg=[];
+					arr.forEach(function(element){
+						if(element[0]<xMin || element[0]>xMax || element[1]<yMin || element[1]>yMax)
+						{}
+						else
+						{arr_reg.push(element)}
+
+					})
+					return arr_reg;
+
+					//return arr;
 					};									
 					regressionPoints = generateRegressionPoints();					
 				}
@@ -902,7 +955,6 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 
 
 				function zoomed() {
-				
 				var new_xScale = d3.event.transform.rescaleX(x);
   				var new_yScale = d3.event.transform.rescaleY(y);
 				
