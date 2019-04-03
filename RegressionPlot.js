@@ -382,6 +382,16 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 			},
 			paint: function ($element, layout) {
 			
+
+				var t=layout.xaxislimitmin;
+				var u=layout.xaxislimitmax;
+				var v=layout.yaxislimitmin;
+				var w=layout.yaxislimitmax;
+				
+				var x_d1=parseInt(t);
+				var x_d2=parseInt(u);
+				var x_d3=parseInt(v);
+				var x_d4=parseInt(w);
 				
 				function checkNull(value){
 				return value=="NaN";
@@ -393,12 +403,22 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				var measure_array=new Array();
 				
 				arr.forEach(function(element) {
+							if(checkNull(element[0].qText) || checkNull(element[1].qText) || checkNull(element[2].qNum) || checkNull(element[3].qNum))
+							{}
+							else if(element[2].qNum<x_d1 || element[2].qNum>x_d2)
+							{}
+							else if(element[3].qNum<x_d3 || element[3].qNum>x_d4)
+							{}
+							else
+							{measure_array.push(element)}
+							/*
   							if(checkNull(element[0].qText) || checkNull(element[1].qText) || checkNull(element[2].qNum) || checkNull(element[3].qNum))
 							{}
 							else
 							{measure_array.push(element)}
+							*/
 							});
-							
+				
 								
 				function make_x_gridlines()
 				{
@@ -413,7 +433,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				var colorDimIndex = 0;
 				var width = $element.width() - layout.margin.left - layout.margin.right;
 				var height = $element.height() - layout.margin.top - layout.margin.bottom;
-				
+				/*
 				var t=layout.xaxislimitmin;
 				var u=layout.xaxislimitmax;
 				var v=layout.yaxislimitmin;
@@ -424,7 +444,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				var x_d3=parseInt(v);
 				var x_d4=parseInt(w);
 				//console.log(typeof ab );
-				
+				*/
 				
 				if(layout.xaxislimitmin!="" & layout.xaxislimitmax!="")
 				{
@@ -479,6 +499,10 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				var xgrid=make_x_gridlines();
 				var ygrid=make_y_gridlines();
 
+				var min_x = x.domain()[0];
+				var max_x = x.domain()[1];
+				var min_y = y.domain()[0];
+				var max_y = y.domain()[1];
 				
 				var id = "ext_" + layout.qInfo.qId;
 				  if (!document.getElementById(id)) {
@@ -672,7 +696,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 
 
 
-				
+
 				function dotsplot(measure_array_zoom)
 				{
 				dots.exit().remove();
@@ -688,14 +712,6 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
                 	.on("mouseout", tipMouseout);
 							
 				}
-				
-
-
-
-				var min_x = x.domain()[0];
-				var max_x = x.domain()[1];
-				var min_y = y.domain()[0];
-				var max_y = y.domain()[1];
 				
 
 				var regressionPoints=[];
