@@ -77,6 +77,19 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 												return "number" || "money" ===  e.numformatx
 												}
 										},
+										
+										xcurrency:{
+										label:"Currency type",
+										ref:"xcurrency",
+          								type:"string",					
+          								expression: "optional",
+										defaultValue:"USD",
+										show:function(e){
+													return "money" === e.numformatx
+													}
+										},
+										
+										/*
 										xcurrency:{
 										label:"Currency type",
 										ref:"xcurrency",
@@ -149,6 +162,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 													return "money" === e.numformatx
 													}
 										},
+										*/
 										yaxisnumformat:{
 										label:"Y-Axis Formatting",
 										ref:"numformaty",
@@ -166,6 +180,19 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 												return "number" || "money" ===  e.numformaty
 												}
 										},
+										
+										ycurrency:{
+										label:"Currency type",
+										ref:"ycurrency",
+          								type:"string",					
+          								expression: "optional",
+										defaultValue:"USD",
+										show:function(e){
+													return "money" === e.numformaty
+													}
+										}
+										
+										/*
 										ycurrency:{
 										label:"Currency type",
 										ref:"ycurrency",
@@ -238,6 +265,8 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 													return "money" === e.numformaty
 													}
 										}
+										*/
+										
 									  }
 								},
 								
@@ -561,7 +590,446 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
       				.call(ygrid)
 				}		
 				
+				var curr_sel_x=layout.xcurrency;
+				var symx="$";
+				switch(curr_sel_x)
+				{
+				case "AED":
+					symx="د.إ";
+					break;
+				case "AMD":
+					symx="֏";
+					break;
+				case "AOA":
+					symx="Kz";
+					break;
+				case "AUD":
+					symx="A$";
+					break;
+				case "AZN":
+					symx="₼";
+					break;
+				case "BAM":
+					symx="KM";
+					break;
+				case "BDT":
+					symx="৳";
+					break;
+				case "BND":
+					symx="B$";
+					break;
+				case "BRL":
+					symx="R$";
+					break;
+				case "BYR":
+					symx="p.";
+					break;
+				case "CAD":
+					symx="C$";
+					break;
+				case "CHF":
+					symx="CHf";
+					break;
+				case "CLP":
+					symx="$";
+					break;
+				case "CNY":
+					symx="¥";
+					break;
+				case "COP":
+					symx="$";
+					break;
+				case "CZK":
+					symx="Kč";
+					break;
+				case "DKK":
+					symx="Kr.";
+					break;
+				case "DZD":
+					symx="دج";
+					break;
+				case "EGP":
+					symx="E£";
+					break;
+				case "EUR":
+					symx="€";
+					break;
+				case "GBP":
+					symx="£";
+					break;
+				case "HKD":
+					symx="HK$";
+					break;
+				case "IDR":
+					symx="Rp";
+					break;
+				case "ILS":
+					symx="₪";
+					break;
+				case "INR":
+					symx="₹";
+					break;
+				case "JOD":
+					symx="د.ا";
+					break;
+				case "JPY":
+					symx="¥";
+					break;
+				case "KES":
+					symx="KSh";
+					break;
+				case "KRW":
+					symx="₩";
+					break;
+				case "KWD":
+					symx="KD";
+					break;
+				case "KZT":
+					symx="₸";
+					break;
+				case "LKR":
+					symx="Rs";
+					break;
+				case "LYD":
+					symx="LD";
+					break;
+				case "MAD":
+					symx="DH";
+					break;
+				case "MGA":
+					symx="Ar";
+					break;
+				case "MRO":
+					symx="MRO";
+					break;
+				case "MXN":
+					symx="Mex$";
+					break;
+				case "MYR":
+					symx="RM";
+					break;
+				case "NGN":
+					symx="₦";
+					break;
+				case "NOK":
+					symx="kr";
+					break;
+				case "NULL":
+					symx="NULL";
+					break;
+				case "NZD":
+					symx="$";
+					break;
+				case "PHP":
+					symx="₱";
+					break;
+				case "PKR":
+					symx="₨";
+					break;
+				case "PLN":
+					symx="zł";
+					break;
+				case "QAR":
+					symx="QR";
+					break;
+				case "RUB":
+					symx="₽";
+					break;
+				case "SAR":
+					symx="SR";
+					break;
+				case "SEK":
+					symx="kr";
+					break;
+				case "SGD":
+					symx="S$";
+					break;
+				case "SKK":
+					symx="Sk";
+					break;
+				case "THB":
+					symx="฿";
+					break;
+				case "TND":
+					symx="DT";
+					break;
+				case "TRY":
+					symx="₺";
+					break;
+				case "TWD":
+					symx="NT$";
+					break;
+				case "UAH":
+					symx="₴";
+					break;
+				case "USD":
+					symx="$";
+					break;
+				case "UYU":
+					symx="$U";
+					break;
+				case "VEF":
+					symx="VEF";
+					break;
+				case "VND":
+					symx="₫";
+					break;
+				case "XOF":
+					symx="CFA";
+					break;
+				case "ZAR":
+					symx="R";
+					break;
+				default:
+					symx="$";
+				}
+				console.log(curr_sel_x);
+				console.log(symx);
 				
+				if(layout.numformatx=="money")
+				{
+				var d3loc_x={
+				 	"decimal": ".",
+ 				 	"thousands": ",",
+ 				 	"grouping": [3],
+ 				 	"currency": [symx, ""]
+				};
+				
+				d3.formatDefaultLocale(d3loc_x);
+				
+				var XA=d3.axisBottom(x).ticks(5).tickFormat(d3.format(formatx));
+				var xaxis=d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(XA);				
+				}				
+				else
+				{
+				var XA=d3.axisBottom(x).ticks(5).tickFormat(d3.format(layout.decimalprecisionx));
+				var xaxis=d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(XA);
+				}
+				
+				
+				
+				
+				
+				var curr_sel_y=layout.xcurrency;
+				var symy="$";
+				
+				switch(curr_sel_y)
+				{
+				case "AED":
+					symy="د.إ";
+					break;
+				case "AMD":
+					symy="֏";
+					break;
+				case "AOA":
+					symy="Kz";
+					break;
+				case "AUD":
+					symy="A$";
+					break;
+				case "AZN":
+					symy="₼";
+					break;
+				case "BAM":
+					symy="KM";
+					break;
+				case "BDT":
+					symy="৳";
+					break;
+				case "BND":
+					symy="B$";
+					break;
+				case "BRL":
+					symy="R$";
+					break;
+				case "BYR":
+					symy="p.";
+					break;
+				case "CAD":
+					symy="C$";
+					break;
+				case "CHF":
+					symy="CHf";
+					break;
+				case "CLP":
+					symy="$";
+					break;
+				case "CNY":
+					symy="¥";
+					break;
+				case "COP":
+					symy="$";
+					break;
+				case "CZK":
+					symy="Kč";
+					break;
+				case "DKK":
+					symy="Kr.";
+					break;
+				case "DZD":
+					symy="دج";
+					break;
+				case "EGP":
+					symy="E£";
+					break;
+				case "EUR":
+					symy="€";
+					break;
+				case "GBP":
+					symy="£";
+					break;
+				case "HKD":
+					symy="HK$";
+					break;
+				case "IDR":
+					symy="Rp";
+					break;
+				case "ILS":
+					symy="₪";
+					break;
+				case "INR":
+					symy="₹";
+					break;
+				case "JOD":
+					symy="د.ا";
+					break;
+				case "JPY":
+					symy="¥";
+					break;
+				case "KES":
+					symy="KSh";
+					break;
+				case "KRW":
+					symy="₩";
+					break;
+				case "KWD":
+					symy="KD";
+					break;
+				case "KZT":
+					symy="₸";
+					break;
+				case "LKR":
+					symy="Rs";
+					break;
+				case "LYD":
+					symy="LD";
+					break;
+				case "MAD":
+					symy="DH";
+					break;
+				case "MGA":
+					symy="Ar";
+					break;
+				case "MRO":
+					symy="MRO";
+					break;
+				case "MXN":
+					symy="Mex$";
+					break;
+				case "MYR":
+					symy="RM";
+					break;
+				case "NGN":
+					symy="₦";
+					break;
+				case "NOK":
+					symy="kr";
+					break;
+				case "NULL":
+					symy="NULL";
+					break;
+				case "NZD":
+					symy="$";
+					break;
+				case "PHP":
+					symy="₱";
+					break;
+				case "PKR":
+					symy="₨";
+					break;
+				case "PLN":
+					symy="zł";
+					break;
+				case "QAR":
+					symy="QR";
+					break;
+				case "RUB":
+					symy="₽";
+					break;
+				case "SAR":
+					symy="SR";
+					break;
+				case "SEK":
+					symy="kr";
+					break;
+				case "SGD":
+					symy="S$";
+					break;
+				case "SKK":
+					symy="Sk";
+					break;
+				case "THB":
+					symy="฿";
+					break;
+				case "TND":
+					symy="DT";
+					break;
+				case "TRY":
+					symy="₺";
+					break;
+				case "TWD":
+					symy="NT$";
+					break;
+				case "UAH":
+					symy="₴";
+					break;
+				case "USD":
+					symy="$";
+					break;
+				case "UYU":
+					symy="$U";
+					break;
+				case "VEF":
+					symy="VEF";
+					break;
+				case "VND":
+					symy="₫";
+					break;
+				case "XOF":
+					symy="CFA";
+					break;
+				case "ZAR":
+					symy="R";
+					break;
+				default:
+					symy="$";
+				}
+				
+				
+				if(layout.numformaty=="money")
+				{
+				var d3loc_y={
+				 	"decimal": ".",
+ 				 	"thousands": ",",
+ 				 	"grouping": [3],
+ 				 	"currency": [symy, ""]
+				};
+				
+				d3.formatDefaultLocale(d3loc_y);
+				
+				var YA=d3.axisLeft(y).ticks(5).tickFormat(d3.format(formaty));
+				var yaxis=d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(YA);
+				}				
+				else
+				{				
+				var YA=d3.axisLeft(y).ticks(5).tickFormat(d3.format(layout.decimalprecisiony));
+				var yaxis=d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(YA);
+				}
+				
+				
+											
+				//////
+				/*
 				if(layout.numformatx=="money")
 				{
 				var d3loc_x={
@@ -581,7 +1049,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				var XA=d3.axisBottom(x).ticks(5).tickFormat(d3.format(layout.decimalprecisionx));
 				var xaxis=d3.select($element[0]).select(".x-axis").attr("transform", "translate(0,"+height+")").call(XA);
 				}
-		
+				
 		
 				if(layout.numformaty=="money")
 				{
@@ -602,7 +1070,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				var YA=d3.axisLeft(y).ticks(5).tickFormat(d3.format(layout.decimalprecisiony));
 				var yaxis=d3.select($element[0]).select(".y-axis").attr("transform", "translate(0,0)").call(YA);
 				}
-				
+				*/
 				
 				
 				if(layout.xaxistitle!="")
