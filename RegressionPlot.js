@@ -1102,7 +1102,11 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 
 				// Add the tooltip container to the vis container
                 // it's invisible and its position/contents are defined during mouseover
-                var tooltip = d3.select($element[0]).append("div").attr("class", "tooltip").style("opacity",0.5);
+                
+				var tooltip = d3.select($element[0]).append("div").attr("class", "tooltip");
+				//var tooltip = d3.select($element[0]).append("div").attr("class", "tooltip").style("opacity",0.5);
+			
+			
 			
                 // tooltip mouseover event handler
                 tipMouseover = function(d) {
@@ -1126,14 +1130,14 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
 				  }
 				  
            
-				  var html  = "<div style='background-color: black ;opacity:0.5;padding:5px ; border-radius: 5px'><span style='color:" + color + ";font-size:14px; font-weight:bold '>" +state+ "</span><br><span style='color:" + color + ";font-size:11px;'>"+tooltipx+" : " +xval+ " <br> "+tooltipy+" : "+yval+"</span><br/></div>"
+				  var html  = "<div style='background-color: black ;opacity:1;padding:5px ; border-radius: 5px'><span style='color:" + color + ";font-size:14px; font-weight:bold '>" +state+ "</span><br><span style='color:" + color + ";font-size:11px;'>"+tooltipx+" : " +xval+ " <br> "+tooltipy+" : "+yval+"</span><br/></div>"
 				  		  
 				  tooltip.html(html)
                       .style("left", d3.select(this).attr("cx")+"px")
                       .style("top", d3.select(this).attr("cy")+"px")
                       .transition()
                       .duration(200) // ms
-                      .style("opacity", .9)  
+                      .style("opacity",0.9)
 
               	};
 			  
@@ -1141,7 +1145,7 @@ define( ["qlik", "https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js", ".
               	tipMouseout = function(d) {
                   tooltip.transition()
                       .duration(300) // ms
-                      .style("opacity", 0); // don't care about position!
+                      .style("opacity",0); // don't care about position!
               	};
 
               
